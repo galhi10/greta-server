@@ -1,4 +1,5 @@
-import { login_Info_DB } from "../services/mongoose";
+import { login_Info_DB,Configuration_DB,Irrigation_Schedule_DB,AVG_Irrigation_DB,mongoose } from "../services/mongoose";
+import { ObjectId } from 'mongodb'
 
 async function getUserByEmail(_email) {
   return await login_Info_DB.findOne({
@@ -12,9 +13,9 @@ async function getUserById(_user_id) {
   });
 }
 
-async function getConfigDcByUserId(_user_id) {
+async function getConfigDcByUserId(user_objectId) {
   return await Configuration_DB.findOne({
-    user_id: _user_id,
+    user_id: user_objectId,
   });
 }
 
@@ -66,9 +67,10 @@ async function getIrregSecDocByUserId(_user_id) {
   }
 
 async function setConfigDocByUserId(_user_id,_config) {
-      newvalues = {
+
+      const newvalues = {
         $set: {
-          config: _config,
+          config : _config,
         },
       };
       const user = { user_id: _user_id };
@@ -115,6 +117,17 @@ async function createNewUser(_email, _password, _first_name, _last_name) {
 
 export default {
   createNewUser,
+  createAVGIrregFiled,
+  createConfigDocument,
+  createIrrigationScheduleDocument,
   getUserByEmail,
   getUserById,
+  getConfigDcByUserId,
+  getIrregSecDocByUserId,
+  getConfigDocByUserId,
+  getAVGIrregDocByParams,
+  getAVGIrregSQMAndIdByParams,
+  pushIrrigSchedByUserId,
+  setConfigDocByUserId,
+  setAVGIrregSQMById,
 };

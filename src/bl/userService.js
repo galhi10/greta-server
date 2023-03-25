@@ -2,6 +2,8 @@ import password from "../utils/password";
 import userRepository from "../dal/userRepository";
 import { errorMessages } from "../utils/errorMessages";
 import auth from "../services/auth";
+import { ObjectId } from 'mongodb'
+
 
 const createUser = async (body) => {
   const user = await userRepository.getUserByEmail(body.email);
@@ -40,4 +42,26 @@ const login = async (body) => {
   }
 };
 
-export default { login, createUser };
+const getConfig = async (body) => {
+  try{
+    const objectId = new ObjectId(body.user_id)  
+    return await userRepository.getConfigDcByUserId(objectId);
+  }
+  catch
+  {
+    throw errorMessages.user.badUserID;
+  }
+};
+
+const setConfig = async (body) => {
+  try{
+    const objectId = new ObjectId(body.user_id)  
+    return await userRepository.setConfigDocByUserId(objectId, body.config);
+  }
+  catch
+  {
+    throw errorMessages.user.badUserID;
+  }
+};
+
+export default { login, createUser, getConfig , setConfig};
