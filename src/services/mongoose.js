@@ -8,3 +8,4 @@ console.log("Successfully connected to DB!");
 export const login_Info_DB = db.collection("login_Info");
 export const Configuration_DB = db.collection("Configuration");
 export const Irrigation_Schedule_DB = db.collection("Irrigation_Schedule");
+export const AVG_Irrigation_DB = db.collection("avg_irrigation_groups");
