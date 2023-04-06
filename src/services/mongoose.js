@@ -1,10 +1,17 @@
-import { MongoClient } from "mongodb";
+// DB Connection
+import mongoose from "mongoose";
+import { config } from "../config";
 
-console.log("Start DB Connection...");
-const uri = "mongodb+srv://ItamarKfir:1234@itamarkfir.d1awrao.mongodb.net/test";
-const db = new MongoClient(uri).db("Users");
-console.log("Successfully connected to DB!");
-
-export const login_Info_DB = db.collection("login_Info");
-export const Configuration_DB = db.collection("Configuration");
-export const Irrigation_Schedule_DB = db.collection("Irrigation_Schedule");
+console.log(config.db.uri, "haha");
+mongoose
+  .connect(
+    "mongodb+srv://ItamarKfir:1234@itamarkfir.d1awrao.mongodb.net/greta",
+    {}
+  )
+  .then(async (r) => {
+    console.log("Successfully connected to DB!");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+mongoose.set("debug", false); // on true -> print to terminal db operations
