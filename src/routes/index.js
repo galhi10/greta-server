@@ -1,8 +1,13 @@
 import express from "express";
-import users from "./userRouter";
+import user from "./userRouter";
+import config from "./configRouter";
+import irrigation from "./irrigationRouter";
+
 const router = express.Router();
 
-router.use("/user", users);
+router.use("/user", user);
+router.use("/config", config);
+router.use("/irrigation", irrigation);
 
 router.use((err, req, res, next) => {
   // console.log(err);

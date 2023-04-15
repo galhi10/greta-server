@@ -3,13 +3,15 @@ import mongoose from "mongoose";
 const configurationSchema = new mongoose.Schema(
   {
     user_id: { type: String },
-    grass: { type: String },
-    mode: { type: String },
-    size: { type: Number },
-    ground: { type: String },
-    location: { type: String },
-    liter_per_minute: { type: Number },
-    light: { type: String },
+    config: {
+      grass: { type: String },
+      mode: { type: String },
+      size: { type: Number },
+      ground: { type: String },
+      location: { type: String },
+      liter_per_minute: { type: Number },
+      light: { type: String },
+    }
   },
   {
     timestamps: true,
