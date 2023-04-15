@@ -106,12 +106,13 @@ async function setConfigDocByUserId(_user_id,_config) {
   }
   
 async function createNewUser(_email, _password, _first_name, _last_name) {
-  return await login_Info_DB.insertOne({
+  const result = await login_Info_DB.insertOne({
     email: _email,
     password: _password,
     first_name: _first_name,
     last_name: _last_name,
   });
+    return result.insertedId;
 }
 
 
