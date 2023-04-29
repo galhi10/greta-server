@@ -18,5 +18,5 @@ const configurationSchema = new mongoose.Schema(
   }
 );
 
-const configurationModel = mongoose.model("configuration", configurationSchema);
+const configurationModel = mongoose.model("configurations", configurationSchema);
 export default configurationModel;

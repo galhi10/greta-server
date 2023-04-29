@@ -15,9 +15,9 @@ const default_config = {
 };
 
 const createConfig = async (body) => {
-  try{
-    const objectId = new ObjectId(body.user_id)  
-    return await userRepository.createConfigDocument(objectId,default_config);
+  try {
+    const objectId = new ObjectId(body.user_id)
+    return await userRepository.createConfigDocument(objectId, default_config);
   }
   catch
   {
@@ -26,8 +26,8 @@ const createConfig = async (body) => {
 };
 
 const getConfig = async (body) => {
-  try{
-    const objectId = new ObjectId(body.user_id)  
+  try {
+    const objectId = new ObjectId(body.user_id);
     return await userRepository.getConfigDcByUserId(objectId);
   }
   catch
@@ -37,8 +37,8 @@ const getConfig = async (body) => {
 };
 
 const setConfig = async (body) => {
-  try{
-    const objectId = new ObjectId(body.user_id)  
+  try {
+    const objectId = new ObjectId(body.user_id)
     return await userRepository.setConfigDocByUserId(objectId, body.config);
   }
   catch
@@ -47,4 +47,4 @@ const setConfig = async (body) => {
   }
 };
 
-export default {getConfig , setConfig, createConfig};
+export default { getConfig, setConfig, createConfig };

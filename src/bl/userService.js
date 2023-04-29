@@ -38,10 +38,10 @@ const createUser = async (body) => {
       body.firstName,
       body.lastName
     );
-    console.log(userid)
     if (userid) {
       const resConfig = await configRepository.createConfigDocument(userid, default_config);
       const resIrregation = await irrigationRepository.createIrrigationScheduleDocument(userid, default_irrigation_schedule);
+      console.log(resIrregation);
     }
   }
   catch (err) {

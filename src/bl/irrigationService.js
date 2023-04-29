@@ -14,8 +14,8 @@ const default_irrigation_schedule = [
 ];
 
 const getIrregSec = async (body) => {
-  try{
-    const objectId = new ObjectId(body.user_id)  
+  try {
+    const objectId = new ObjectId(body.user_id)
     return await userRepository.getIrregSecDocByUserId(objectId);
   }
   catch
@@ -25,9 +25,10 @@ const getIrregSec = async (body) => {
 };
 
 const pushIrregSec = async (body) => {
-  try{
-    const objectId = new ObjectId(body.user_id)  
-    return await userRepository.pushIrrigSchedByUserId(objectId,body);
+  try {
+    const objectId = new ObjectId(body.user_id)
+    console.log(body.schedule);
+    return await userRepository.pushIrrigSchedByUserId(objectId, body.schedule);
   }
   catch
   {
@@ -35,4 +36,4 @@ const pushIrregSec = async (body) => {
   }
 };
 
-export default {getIrregSec, pushIrregSec};
+export default { getIrregSec, pushIrregSec };
