@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 const irrigationScheduleSchema = new mongoose.Schema(
   {
     user_id: { type: String },
-    schedule: {   
+    schedule: [{   
       date: { type: String },
       time: { type: String },
       status: { type: String },
       humidity: { type: Number},
-    },
+    }],
   },
   {
     timestamps: true,
@@ -16,7 +16,7 @@ const irrigationScheduleSchema = new mongoose.Schema(
 );
 
 const irrigationScheduleModel = mongoose.model(
-  "irrigation_schedule",
+  "irrigation_schedules",
   irrigationScheduleSchema
 );
 export default irrigationScheduleModel;

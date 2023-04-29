@@ -1,9 +1,10 @@
 import configurationModel from "./models/configuration";
 
 async function getConfigDcByUserId(user_objectId) {
-  return await configurationModel.findOne({
+  const user_Config = await configurationModel.findOne({
     user_id: user_objectId,
   });
+  return user_Config.config;
 }
 async function getConfigDocByUserId(_user_id) {
   return await configurationModel.findOne({

@@ -2,9 +2,10 @@ import irrigationScheduleModel from "./models/irrigation_schedule";
 import irrigationGroupsModel from "./models/avg_irrigation_groups";
 
 async function getIrregSecDocByUserId(_user_id) {
-  return await irrigationScheduleModel.findOne({
+  const result = await irrigationScheduleModel.findOne({
     user_id: _user_id,
   });
+  return result;
 }
 
 async function getAVGIrregDocByParams(_location, _ground, _grass, _light, _evaporation) {
@@ -59,7 +60,7 @@ async function createAVGIrregFiled(default_irreg_group) {
 async function createIrrigationScheduleDocument(_user_id, default_irrigation_schedule) {
   return await irrigationScheduleModel.create({
     user_id: _user_id,
-    irrigation_schedule: default_irrigation_schedule,
+    schedule: default_irrigation_schedule,
   });
 }
 

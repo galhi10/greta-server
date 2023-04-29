@@ -1,14 +1,31 @@
 import express, { Request, Response, NextFunction, Router } from "express";
-import { check, validationResult } from "express-validator";
 import userService from "../bl/irrigationService";
+import auth from "../services/auth";
+import { check, validationResult, header } from "express-validator";
 
 const router = express.Router();
 router.get(
   "/getIrregSec",
+  header("Authorization")
+    .custom(async (token) => {
+      const authorized = auth.authorized(token, ["ADMIN"])
+      if (authorized.status !== "SUCCESS") {
+        return Promise.reject(authorized.msg);
+      }
+      Promise.resolve();
+    }),
   async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ status: 400, ...errors });
+    }
+    const token = auth.getToken(req);
+    const payload = auth.decodeTokenWithoutBearer(token);
     const body = {
-      user_id: req.body.user_id,
+      user_id: payload.userId,
     };
+    console.log(body);
+    //
     try {
       const result = await userService.getIrregSec(body);
       res.json(result.schedule);
@@ -21,12 +38,29 @@ router.get(
 
 router.post(
   "/pushIrregSec",
+  header("Authorization")
+    .custom(async (token) => {
+      const authorized = auth.authorized(token, ["ADMIN"])
+      if (authorized.status !== "SUCCESS") {
+        return Promise.reject(authorized.msg);
+      }
+      Promise.resolve();
+    }),
   async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ status: 400, ...errors });
+    }
+    const token = auth.getToken(req);
+    const payload = auth.decodeTokenWithoutBearer(token);
     const body = {
-      date: req.body.date,
-      time: req.body.time,
-      status: req.body.status,
-      humidity: req.body.humidity,
+      user_id: payload.userId,
+      schedule:{
+        date: req.body.date,
+        time: req.body.time,
+        status: req.body.status,
+        humidity: req.body.humidity,
+      }
     };
     try {
       const result = await userService.pushIrregSec(body);
