@@ -24,7 +24,6 @@ router.get(
     const body = {
       user_id: payload.userId,
     };
-    console.log(body);
     try {
       const result = await configService.getConfig(body);
       res.json(result);
