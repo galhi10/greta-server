@@ -4,6 +4,11 @@ export const errorMessages = {
     exists: { status: 400, message: "The user already exists" },
     badEmailOrPassword: { status: 400, message: "Bad email or password" },
     badUserID: { status: 400, message: "User id is not exists" },
+  },
+
+  IrrigationGroupData: {
+    notExist: { status: 400, message: "Table is not exist" },
+    generalFailure: { status: 400, message: "General Failure" },
 
   },
 };

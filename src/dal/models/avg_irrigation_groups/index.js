@@ -1,14 +1,16 @@
 import mongoose from "mongoose";
-//TODO
 const irrigationScheduleSchema = new mongoose.Schema(
   {
     user_id: { type: String },
-    schedule: {
-      date: { type: String },
-      time: { type: String },
-      status: { type: String },
-      humidity: { type: Number },
-     },
+    groups: {
+      location: { type: String },
+      light: { type: String },
+      grass: { type: String },
+      ground: { type: String },
+      evaporation_prec: { type: Number },
+      liter_per_minute: { type: Number },
+      updates: { type: Number },
+    },
   },
   {
     timestamps: true,

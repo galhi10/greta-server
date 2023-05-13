@@ -18,39 +18,50 @@ async function getAVGIrregDocByParams(_location, _ground, _grass, _light, _evapo
   });
 }
 
-async function getAVGIrregSQMAndIdByParams(_location, _ground, _grass, _light, _evaporation) {
+async function getAVGLiterPerSQMByParams(_location, _ground, _grass, _light, _evaporation) {
   const avgIrreg = await irrigationGroupsModel.findOne({
     location: _location,
-    ground: _ground,
-    grass: _grass,
     light: _light,
+    grass: _grass,
+    ground: _ground,
     evaporation: _evaporation,
   });
-  return { _id: avgIrreg._id, liter_per_sqm: avgIrreg.liter_per_sqm };
+  if (avgIrreg) {
+    return avgIrreg.liter_per_sqm;
+  }
+  return null;
+}
+
+async function setAVGLiterPerSQMByParams(_location, _ground, _grass, _light, _evaporation, _water_per_sqm) {
+  const avgIrreg = await irrigationGroupsModel.findOne({
+    location: _location,
+    light: _light,
+    grass: _grass,
+    ground: _ground,
+    evaporation: _evaporation,
+  });
+  if (avgIrreg) {
+    const new_avg = (avgIrreg.updates * avgIrreg.liter_per_sqm + _water_per_sqm) / (avgIrreg.updates + 1)
+    return await irrigationGroupsModel.updateOne(
+      { liter_per_sqm: new_avg },
+      { $inc: { updates: 1 } }
+    );
+  }
+  return null;
 }
 
 async function pushIrrigSchedByUserId(_user_id, new_irreg_sec) {
   const user = await irrigationScheduleModel.findOne({ user_id: _user_id });
-  if (user.irrigation_schedule.length > 5) {
+  if (user.schedule.length > 5) {
     await irrigationScheduleModel.updateOne(
       { user_id: _user_id },
-      { $pop: { irrigation_schedule: -1 } }
+      { $pop: { schedule: -1 } }
     );
   }
   return await irrigationScheduleModel.updateOne(
     { user_id: _user_id },
-    { $push: { irrigation_schedule: new_irreg_sec } }
+    { $push: { schedule: new_irreg_sec } }
   );
-}
-
-async function setAVGIrregSQMById(irreg_id, _water_per_sqm) {
-  newvalues = {
-    $set: {
-      water_per_sqm: _water_per_sqm,
-    },
-  };
-  const id = { _id: irreg_id };
-  return await irrigationGroupsModel.updateOne(id, newvalues);
 }
 
 async function createAVGIrregFiled(default_irreg_group) {
@@ -69,7 +80,7 @@ export default {
   createIrrigationScheduleDocument,
   getIrregSecDocByUserId,
   getAVGIrregDocByParams,
-  getAVGIrregSQMAndIdByParams,
+  getAVGLiterPerSQMByParams,
+  setAVGLiterPerSQMByParams,
   pushIrrigSchedByUserId,
-  setAVGIrregSQMById,
 };
