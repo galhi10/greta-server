@@ -1,6 +1,7 @@
 import password from "../utils/password";
 import userRepository from "../dal/userRepository";
 import configRepository from "../dal/configRepository";
+import sensorRepository from "../dal/sensorRepository";
 import irrigationRepository from "../dal/irrigationRepository";
 import { errorMessages } from "../utils/errorMessages";
 import auth from "../services/auth";
@@ -25,6 +26,10 @@ const default_irrigation_schedule = [
   },
 ];
 
+const default_Sensor = {
+  id: -1,
+};
+
 const createUser = async (body) => {
   const user = await userRepository.getUserByEmail(body.email);
   if (user) {
@@ -39,21 +44,15 @@ const createUser = async (body) => {
       body.lastName
     );
     if (userid) {
-      const resConfig = await configRepository.createConfigDocument(
-        userid,
-        default_config
-      );
-      const resIrregation =
-        await irrigationRepository.createIrrigationScheduleDocument(
-          userid,
-          default_irrigation_schedule
-        );
-      console.log(resIrregation);
+      const resConfig = await configRepository.createConfigDocument(userid, default_config);
+      const resIrregation = await irrigationRepository.createIrrigationScheduleDocument(userid, default_irrigation_schedule);
+      console.log(resConfig && resIrregation);
     }
-  } catch (err) {
-    return { ok: false };
   }
-  return { ok: true };
+  catch (err) {
+    return { ok: false }
+  }
+  return { ok: true }
 };
 
 const login = async (body) => {
