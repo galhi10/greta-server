@@ -9,7 +9,7 @@ const configurationSchema = new mongoose.Schema(
       size: { type: Number },
       ground: { type: String },
       location: { type: String },
-      liter_per_minute: { type: Number },
+      liters_per_minute: { type: Number },
       light: { type: String },
     }
   },

@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction, Router } from "express";
 import userService from "../bl/irrigationService";
 import auth from "../services/auth";
 import { check, validationResult, header } from "express-validator";
+import weatherApi from "../services/weatherApi";
 
 const router = express.Router();
 router.get(
@@ -55,7 +56,7 @@ router.post(
     const payload = auth.decodeTokenWithoutBearer(token);
     const body = {
       user_id: payload.userId,
-      schedule:{
+      schedule: {
         date: req.body.date,
         time: req.body.time,
         status: req.body.status,

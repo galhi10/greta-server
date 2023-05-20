@@ -4,6 +4,7 @@ import cors from "cors";
 import routes from "./routes";
 import { config } from "./config";
 import "./services/mongoose";
+import weatherApi from "./services/weatherApi";
 
 const app = express();
 
@@ -14,3 +15,5 @@ app.use(bodyParser.json());
 app.use(routes);
 
 app.listen(PORT, () => console.log(`App listening at port ${PORT}`));
+
+
