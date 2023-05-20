@@ -3,6 +3,7 @@ import deviceRepository from "../dal/devicesRepository";
 import { errorMessages } from "../utils/errorMessages";
 import auth from "../services/auth";
 import { ObjectId } from 'mongodb'
+import { Console } from "winston/lib/winston/transports";
 
 const default_Device =
 {
@@ -15,8 +16,8 @@ const default_Humidity = 0;
 
 const createDevice = async (body) => {
   try {
-    const res = await deviceRepository.isDeviceExistsBySensorId(body.sensor.id);
-    if (res) {
+    const isExs = await deviceRepository.isDeviceExistsBySensorId(body.sensor.id);
+    if (isExs) {
       throw errorMessages.device.exists;
     }
     const objectId = new ObjectId(body.user_id)
@@ -42,12 +43,26 @@ const getDevicesId = async (body) => {
 const setDevice = async (body) => {
   try {
     const objectId = new ObjectId(body.user_id)
-    const res = await deviceRepository.setDeviceByUserId(objectId, body.device);
+    const res = await deviceRepository.setDeviceByUserId(body.sensor.id, body.sensor);
     return res.acknowledged;
   }
   catch
   {
     throw errorMessages.user.badUserID;
+  }
+};
+
+const setHumidity = async (body) => {
+  try {
+    const isExs = await deviceRepository.isDeviceExistsBySensorId(body.sensor_id);
+    console.log(body);
+
+    const res = await deviceRepository.setHumidityBySensorId(body.sensor_id, body.humidity);
+    return res.acknowledged;
+  }
+  catch
+  {
+    throw errorMessages.device.generalFailure;
   }
 };
 
@@ -61,4 +76,4 @@ const getUserId = async (device_id) => {
   }
 };
 
-export default { getDevicesId, setDevice, createDevice, getUserId };
+export default { getDevicesId, setDevice, createDevice, getUserId, setHumidity };

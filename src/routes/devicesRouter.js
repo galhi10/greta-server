@@ -3,6 +3,7 @@ import configService from "../bl/configService";
 import auth from "../services/auth";
 import express, { Request, Response, NextFunction, Router } from "express";
 import { check, validationResult, header } from "express-validator";
+import { Console } from "winston/lib/winston/transports";
 
 const router = express.Router();
 
@@ -105,9 +106,9 @@ router.post(
     }
   }
 );
-//Not Finish
+
 router.post(
-  "setGroundHumidity",
+  "/setGroundHumidity",
   header("Authorization")
     .custom(async (token) => {
       const authorized = auth.authorized(token, ["ADMIN"])
@@ -121,16 +122,12 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(422).json({ status: 400, ...errors });
     }
-    const token = auth.getToken(req);
-    const payload = auth.decodeTokenWithoutBearer(token);
     const body = {
-      user_id: payload.userId,
-      sensor: {
-        id: req.body.sensor.id,
-      }
-    };
+      sensor_id: req.body.sensor_id,
+      humidity: req.body.humidity
+    }
     try {
-      const result = await devicesService.setSensor(body);
+      const result = await devicesService.setHumidity(body);
       res.json(result);
     } catch (err) {
       console.log(err);

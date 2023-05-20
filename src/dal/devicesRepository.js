@@ -25,26 +25,24 @@ async function isDeviceExistsBySensorId(Device_Id) {
   });
 }
 
-async function setDeviceByUserId(_user_id, _Sensor) {
+async function setDeviceByUserId(sensor_id, _Sensor) {
   const newvalues = {
     $set: {
       sensor: _Sensor,
     },
   };
-  console.log(newvalues);
-  const user = { user_id: _user_id };
-  return await devicesModel.updateOne(user, newvalues);
+  const sensor = { "sensor.id": sensor_id };
+  return await devicesModel.updateOne(sensor, newvalues);
 }
 
-async function setHumidityUserId(_user_id, _Sensor) {
+async function setHumidityBySensorId(sensor_id, _humidity) {
   const newvalues = {
     $set: {
-      sensor: _Sensor,
+      humidity: _humidity,
     },
   };
-  console.log(newvalues);
-  const user = { user_id: _user_id };
-  return await devicesModel.updateOne(user, newvalues);
+  const sensor = { "sensor.id": sensor_id };
+  return await devicesModel.updateOne(sensor, newvalues);
 }
 
 async function createDeviceDocument(_user_id, default_Sensor, _humidity) {
@@ -62,4 +60,5 @@ export default {
   setDeviceByUserId,
   getUserIdByDeviceId,
   isDeviceExistsBySensorId,
+  setHumidityBySensorId,
 };
