@@ -1,7 +1,7 @@
 import password from "../utils/password";
 import userRepository from "../dal/userRepository";
 import configRepository from "../dal/configRepository";
-import sensorRepository from "../dal/sensorRepository";
+import devicesRepository from "../dal/devicesRepository";
 import irrigationRepository from "../dal/irrigationRepository";
 import { errorMessages } from "../utils/errorMessages";
 import auth from "../services/auth";
@@ -26,9 +26,7 @@ const default_irrigation_schedule = [
   },
 ];
 
-const default_Sensor = {
-  id: -1,
-};
+const default_Humidity = 0;
 
 const createUser = async (body) => {
   const user = await userRepository.getUserByEmail(body.email);
