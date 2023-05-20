@@ -5,6 +5,9 @@ export const errorMessages = {
     badEmailOrPassword: { status: 400, message: "Bad email or password" },
     badUserID: { status: 400, message: "User id is not exists" },
   },
+  device: {
+    exists: { status: 400, message: "The sensor id already exists" },
+  },
 
   IrrigationGroupData: {
     notExist: { status: 400, message: "Table is not exist" },

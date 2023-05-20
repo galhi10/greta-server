@@ -2,12 +2,16 @@ import express from "express";
 import user from "./userRouter";
 import config from "./configRouter";
 import irrigation from "./irrigationRouter";
+import devices from "./devicesRouter";
+import weatherApi from "./weatherRouter";
 
 const router = express.Router();
 
 router.use("/user", user);
 router.use("/config", config);
 router.use("/irrigation", irrigation);
+router.use("/devices", devices);
+router.use("/weatherApi", weatherApi);
 
 router.use((err, req, res, next) => {
   if (err.name === "ValidationError") {
