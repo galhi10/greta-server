@@ -7,14 +7,13 @@ import weatherApi from "../services/weatherApi";
 const router = express.Router();
 router.get(
   "/getIrregSec",
-  header("Authorization")
-    .custom(async (token) => {
-      const authorized = auth.authorized(token, ["ADMIN"])
-      if (authorized.status !== "SUCCESS") {
-        return Promise.reject(authorized.msg);
-      }
-      Promise.resolve();
-    }),
+  header("Authorization").custom(async (token) => {
+    const authorized = auth.authorized(token, ["ADMIN", "USER"]);
+    if (authorized.status !== "SUCCESS") {
+      return Promise.reject(authorized.msg);
+    }
+    Promise.resolve();
+  }),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -38,14 +37,13 @@ router.get(
 
 router.post(
   "/pushIrregSec",
-  header("Authorization")
-    .custom(async (token) => {
-      const authorized = auth.authorized(token, ["ADMIN"])
-      if (authorized.status !== "SUCCESS") {
-        return Promise.reject(authorized.msg);
-      }
-      Promise.resolve();
-    }),
+  header("Authorization").custom(async (token) => {
+    const authorized = auth.authorized(token, ["ADMIN"]);
+    if (authorized.status !== "SUCCESS") {
+      return Promise.reject(authorized.msg);
+    }
+    Promise.resolve();
+  }),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -60,7 +58,7 @@ router.post(
         time: req.body.time,
         status: req.body.status,
         humidity: req.body.humidity,
-      }
+      },
     };
     try {
       const result = await userService.pushIrregSec(body);

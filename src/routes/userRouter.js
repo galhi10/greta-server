@@ -67,16 +67,14 @@ router.post(
 );
 
 router.post(
-  "/setPassword",
-  header("Authorization")
-    .custom(async (token) => {
-      const authorized = auth.authorized(token, ["ADMIN"])
-      if (authorized.status !== "SUCCESS") {
-        return Promise.reject(authorized.msg);
-      }
-      Promise.resolve();
-    }),
-  check("password").isString().withMessage("Not an valid password"),
+  "/update",
+  header("Authorization").custom(async (token) => {
+    const authorized = auth.authorized(token, ["ADMIN", "USER"]);
+    if (authorized.status !== "SUCCESS") {
+      return Promise.reject(authorized.msg);
+    }
+    Promise.resolve();
+  }),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -84,13 +82,46 @@ router.post(
     }
     const token = auth.getToken(req);
     const payload = auth.decodeTokenWithoutBearer(token);
+
     const body = {
-      userid: payload.userId,
+      userId: payload.userId,
       password: req.body.password,
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
     };
     try {
-      const result = await userService.setPassword(body);
+      const result = await userService.updateUser(body);
       res.json(result);
+    } catch (err) {
+      console.log(err);
+      res.status(err.status).json({ ok: false, message: err.message });
+    }
+  }
+);
+
+router.get(
+  "/",
+  header("Authorization").custom(async (token) => {
+    const authorized = auth.authorized(token, ["ADMIN", "USER"]);
+    if (authorized.status !== "SUCCESS") {
+      return Promise.reject(authorized.msg);
+    }
+    Promise.resolve();
+  }),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ status: 400, ...errors });
+    }
+    const token = auth.getToken(req);
+    const payload = auth.decodeTokenWithoutBearer(token);
+    try {
+      const result = await userService.getUser(payload.userId);
+      if (result.ok) {
+        res.json(result);
+      } else {
+        res.status(400).json({ ok: false, message: result.message });
+      }
     } catch (err) {
       console.log(err);
       res.status(err.status).json({ ok: false, message: err.message });
