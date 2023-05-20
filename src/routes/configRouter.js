@@ -6,14 +6,13 @@ import { check, validationResult, header } from "express-validator";
 const router = express.Router();
 router.get(
   "/getConfig",
-  header("Authorization")
-    .custom(async (token) => {
-      const authorized = auth.authorized(token, ["ADMIN"])
-      if (authorized.status !== "SUCCESS") {
-        return Promise.reject(authorized.msg);
-      }
-      Promise.resolve();
-    }),
+  header("Authorization").custom(async (token) => {
+    const authorized = auth.authorized(token, ["ADMIN", "USER"]);
+    if (authorized.status !== "SUCCESS") {
+      return Promise.reject(authorized.msg);
+    }
+    Promise.resolve();
+  }),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -36,14 +35,13 @@ router.get(
 
 router.post(
   "/setConfig",
-  header("Authorization")
-    .custom(async (token) => {
-      const authorized = auth.authorized(token, ["ADMIN"])
-      if (authorized.status !== "SUCCESS") {
-        return Promise.reject(authorized.msg);
-      }
-      Promise.resolve();
-    }),
+  header("Authorization").custom(async (token) => {
+    const authorized = auth.authorized(token, ["ADMIN", "USER"]);
+    if (authorized.status !== "SUCCESS") {
+      return Promise.reject(authorized.msg);
+    }
+    Promise.resolve();
+  }),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -61,7 +59,7 @@ router.post(
         location: req.body.config.location,
         liters_per_minute: req.body.config.liters_per_minute,
         light: req.body.config.light,
-      }
+      },
     };
     try {
       const result = await configService.setConfig(body);

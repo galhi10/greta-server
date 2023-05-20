@@ -4,7 +4,7 @@ import configRepository from "../dal/configRepository";
 import irrigationRepository from "../dal/irrigationRepository";
 import { errorMessages } from "../utils/errorMessages";
 import auth from "../services/auth";
-import { ObjectId } from 'mongodb'
+import { ObjectId } from "mongodb";
 
 const default_config = {
   grass: "",
@@ -39,15 +39,21 @@ const createUser = async (body) => {
       body.lastName
     );
     if (userid) {
-      const resConfig = await configRepository.createConfigDocument(userid, default_config);
-      const resIrregation = await irrigationRepository.createIrrigationScheduleDocument(userid, default_irrigation_schedule);
+      const resConfig = await configRepository.createConfigDocument(
+        userid,
+        default_config
+      );
+      const resIrregation =
+        await irrigationRepository.createIrrigationScheduleDocument(
+          userid,
+          default_irrigation_schedule
+        );
       console.log(resIrregation);
     }
+  } catch (err) {
+    return { ok: false };
   }
-  catch (err) {
-    return { ok: false }
-  }
-  return { ok: true }
+  return { ok: true };
 };
 
 const login = async (body) => {
@@ -68,11 +74,20 @@ const login = async (body) => {
   }
 };
 
-const setPassword = async (body) => {
+const updateUser = async (body) => {
   body.password = await password.encrypt(body.password.toString());
-  if (body.password) {
-    const res = await userRepository.setPasswordByUserId(body.userid, body.password)
-    console.log(res);
+  if (!body.password) {
+    body.password = undefined;
+  }
+
+  const res = await userRepository.updateUser(
+    body.userId,
+    body.password,
+    body.first_name,
+    body.lst_name
+  );
+  console.log(res);
+  if (res) {
     return {
       ok: true,
     };
@@ -81,4 +96,13 @@ const setPassword = async (body) => {
   }
 };
 
-export default { login, createUser, setPassword };
+const getUser = async (userId) => {
+  const user = await userRepository.getUserById(userId);
+  if (user) {
+    return { ok: true, data: user };
+  } else {
+    return { ok: false, message: "User not found" };
+  }
+};
+
+export default { login, createUser, updateUser, getUser };

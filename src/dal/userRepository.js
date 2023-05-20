@@ -12,14 +12,16 @@ async function getUserById(_user_id) {
   });
 }
 
-async function setPasswordByUserId(_user_id, _password) {
-  const newPassword = {
+async function updateUser(_user_id, _password, _first_name, _last_name) {
+  const updatedUser = {
     $set: {
       password: _password,
+      first_name: _first_name,
+      last_name: _last_name,
     },
   };
   const user = { _id: _user_id };
-  return await userModel.updateOne(user, newPassword);
+  return await userModel.updateOne(user, updatedUser);
 }
 
 async function createNewUser(_email, _password, _first_name, _last_name) {
@@ -36,6 +38,6 @@ async function createNewUser(_email, _password, _first_name, _last_name) {
 export default {
   createNewUser,
   getUserByEmail,
+  updateUser,
   getUserById,
-  setPasswordByUserId,
 };
