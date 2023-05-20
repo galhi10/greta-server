@@ -10,5 +10,5 @@ export const config = {
     port: 2718,
   },
   db: { uri: process.env.MONGO_URI },
-  service: {},
+  weather: { api_key: process.env.WEATHER_API_KEY }
 };

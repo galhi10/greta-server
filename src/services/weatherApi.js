@@ -1,4 +1,6 @@
-const apiKey = 'aa7dcd9030de206f0d1b34f933653c57';
+import { config } from "../config";
+
+const apiKey = config.weather.api_key;
 const secondsInHour = 60 * 60;
 
 async function GetItWillRainByHour(city, hoursForecast) {
