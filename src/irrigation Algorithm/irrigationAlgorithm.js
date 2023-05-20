@@ -2,17 +2,21 @@ const MIN_HUMIDITY_PERCENTAGE = 25;
 const MAX_HUMIDITY_PERCENTAGE = 30;
 const AVG_HUMIDITY_PERCENTAGE =
   (MAX_HUMIDITY_PERCENTAGE + MIN_HUMIDITY_PERCENTAGE) / 2;
-const TWENTY_MINUTES = 1000 * 60 * 20; // to change
+const CRITIC_HUMIDITY_PERCENTAGE = 10;
+const SIX_AM = 10;
+const EIGHT_PM = 10;
+
+const TWENTY_MINUTES = 1000 * 60 * 20;
 // let REMINDER_POPED_UP = false;
 // let ABORTED_DUE_TO_PERCIPITAION = 0;
 
 function hourlyCheckForHumidityAndWeather() {
   const humidityPercentage = checkForHumiditySensor();
-  if (humidityPercentage < 10) {
+  if (humidityPercentage < CRITIC_HUMIDITY_PERCENTAGE) {
     const hourNow = new Date().getHours();
     const isPercipitation = checkForPercipitaion(DBMyLocation()); // 50% for percipitation in next 12 hours
     if (!isPercipitation /*|| ABORTED_DUE_TO_PERCIPITAION > 2*/) {
-      if (!(hourNow > 6 && hourNow < 20)) {
+      if (!(hourNow > SIX_AM && hourNow < EIGHT_PM)) {
         // not between 06:00 to 20:00
         initIrrigationProcess();
       } else {
@@ -25,7 +29,7 @@ function hourlyCheckForHumidityAndWeather() {
 }
 
 function initIrrigationProcess() {
-  // considering hour is good and humidity is low, and no percipitation
+  // considering hour is good, humidity low, no predicted percipitation
   const loanSize = DBcheckForLoanSize();
   const litersPerMinute = DBcheckForLitersPerMinute();
   const humidityPercentageBefore = checkForHumiditySensor();
@@ -44,18 +48,17 @@ function initIrrigationProcess() {
   activateSprinklers(irrigatingDuration);
 
   var firstInterval = setInterval(function () {
-    checkSensorAfterFirstIrrigation(
+    checkSensorAfterIrrigation(
       firstInterval,
       humidityPercentageBefore,
       neededLitersPerMeter
     );
   }, TWENTY_MINUTES + irrigatingDuration); // verify it works plus irrigation time
 
-  // REMINDER_POPED_UP = false;
-  // ABORTED_DUE_TO_PERCIPITAION = 0;
+  // REMINDER_POPED_UP;
 }
 
-function checkSensorAfterFirstIrrigation(
+function checkSensorAfterIrrigation(
   firstInterval,
   humidityPercentageBefore,
   neededLitersPerMeter
@@ -68,35 +71,14 @@ function checkSensorAfterFirstIrrigation(
   ) {
     // to document to database the liters per minute - it was good
     return;
-  }
-  if (
-    humidityPercentageAfter < MIN_HUMIDITY_PERCENTAGE ||
-    humidityPercentageAfter > MAX_HUMIDITY_PERCENTAGE
-  ) {
+  } else {
     const exception =
-      (AVG_HUMIDITY_PERCENTAGE - humidityPercentageBefore) /
-      (humidityPercentageAfter - humidityPercentageBefore);
-    // document to DB: neededLitersPerMeter * exception
+      (humidityPercentageAfter - humidityPercentageBefore) /
+      (AVG_HUMIDITY_PERCENTAGE - humidityPercentageBefore);
+    // document to DB: (1 / exeption )*neededLitersPerMeter;
     return;
   }
 }
-
-// function secondInterval(secondInterval, totalIrrigationLiters) {
-//   clearInterval(secondInterval);
-//   const humidityPercentageAfterSecondIrrigation = checkForHumiditySensor();
-//   if (
-//     humidityPercentageAfterSecondIrrigation >= MIN_HUMIDITY_PERCENTAGE &&
-//     humidityPercentageAfterSecondIrrigation <= MAX_HUMIDITY_PERCENTAGE
-//   ) {
-//     //document to data base: totalIrrigationLiters / loan size --- thats the best liters per meter
-//     return;
-//   } else {
-//     const toChange =
-//       AVG_HUMIDITY_PERCENTAGE / humidityPercentageAfterSecondIrrigation;
-//     //document to data base: (totalIrrigationLiters / loan size)*toAdd --- thats the best liters per meter
-//   }
-//   clearInterval(secondInterval);
-// }
 
 function convertLitersToDuration(amountOfLiters, litersPerMinute) {
   // check if object is fine
