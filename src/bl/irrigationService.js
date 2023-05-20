@@ -28,7 +28,8 @@ const pushIrregSec = async (body) => {
   try {
     const objectId = new ObjectId(body.user_id)
     console.log(body.schedule);
-    return await irrigationRepository.pushIrrigSchedByUserId(objectId, body.schedule);
+    const res =  await irrigationRepository.pushIrrigSchedByUserId(objectId, body.schedule);
+    return res.acknowledged;
   }
   catch
   {
@@ -52,7 +53,8 @@ const setIrregGroupAVGWatering = async (_location, _ground, _grass, _light, _eva
     if (reqStatus) {
       return reqStatus;
     }
-    return await irrigationRepository.createAVGIrregFiled({ location: _location, ground: _ground, grass: _grass, light: _light, evaporation: _evaporation, water_per_sqm: _water_per_sqm, updates: 0 });
+    const res = await irrigationRepository.createAVGIrregFiled({ location: _location, ground: _ground, grass: _grass, light: _light, evaporation: _evaporation, water_per_sqm: _water_per_sqm, updates: 0 });
+    return res.acknowledged;
   }
   catch
   {
