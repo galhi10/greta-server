@@ -39,7 +39,8 @@ const getConfig = async (body) => {
 const setConfig = async (body) => {
   try {
     const objectId = new ObjectId(body.user_id)
-    return await userRepository.setConfigDocByUserId(objectId, body.config);
+    const res = await userRepository.setConfigDocByUserId(objectId, body.config);
+    return res.acknowledged;
   }
   catch
   {
