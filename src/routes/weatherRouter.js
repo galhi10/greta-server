@@ -11,7 +11,7 @@ router.get(
       return res.status(422).json({ status: 400, ...errors });
     }
     try {
-      const result = await weatherApi.GetCurrentTemperature(req.city);
+      const result = await weatherApi.GetCurrentTemperature(req.body.city);
       res.json(result);
     } catch (err) {
       console.log(err);

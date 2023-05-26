@@ -7,11 +7,12 @@ export const errorMessages = {
   },
   device: {
     exists: { status: 400, message: "The sensor id already exists" },
+    notExist: { status: 400, message: "The sensor does not exists" },
+    generalFailure: { status: 400, message: "General Failure" },
   },
 
   IrrigationGroupData: {
     notExist: { status: 400, message: "Table is not exist" },
     generalFailure: { status: 400, message: "General Failure" },
-
   },
 };
