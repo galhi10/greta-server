@@ -1,5 +1,4 @@
 import { config } from "../config";
-//import { cities } from "../utils/cities_list.json";
 
 const apiKey = config.weather.api_key;
 const secondsInHour = 60 * 60;
@@ -7,7 +6,6 @@ const secondsInHour = 60 * 60;
 const fs = require('fs');
 const path = require('path');
 const filePath = path.join(__dirname, '..', 'utils', '\cities_list.json');
-const citiesList = null;
 
 async function readCitiesFromFile() {
   const jsonData = fs.readFileSync(filePath, 'utf-8');
