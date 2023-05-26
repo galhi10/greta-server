@@ -1,7 +1,19 @@
 import { config } from "../config";
+//import { cities } from "../utils/cities_list.json";
 
 const apiKey = config.weather.api_key;
 const secondsInHour = 60 * 60;
+
+const fs = require('fs');
+const path = require('path');
+const filePath = path.join(__dirname, '..', 'utils', '\cities_list.json');
+const citiesList = null;
+
+async function readCitiesFromFile() {
+  const jsonData = fs.readFileSync(filePath, 'utf-8');
+  const citiesList = JSON.parse(jsonData);
+  return citiesList;
+}
 
 async function GetItWillRainByHour(city, hoursForecast) {
   const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city},${'Israel'}&appid=${apiKey}`;
@@ -33,4 +45,4 @@ async function GetCurrentTemperature(city) {
     });
 }
 
-export default { GetItWillRainByHour, GetCurrentTemperature };
+export default { GetItWillRainByHour, GetCurrentTemperature, readCitiesFromFile };
