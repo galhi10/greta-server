@@ -12,7 +12,7 @@ const default_config = {
   mode: "",
   ground: "",
   country: "",
-  city:"",
+  city: "",
   size: 0,
   liters_per_minute: 0,
   light: "",
@@ -43,15 +43,21 @@ const createUser = async (body) => {
       body.lastName
     );
     if (userid) {
-      const resConfig = await configRepository.createConfigDocument(userid, default_config);
-      const resIrregation = await irrigationRepository.createIrrigationScheduleDocument(userid, default_irrigation_schedule);
+      const resConfig = await configRepository.createConfigDocument(
+        userid,
+        default_config
+      );
+      const resIrregation =
+        await irrigationRepository.createIrrigationScheduleDocument(
+          userid,
+          default_irrigation_schedule
+        );
       console.log(resConfig && resIrregation);
     }
+  } catch (err) {
+    return { ok: false };
   }
-  catch (err) {
-    return { ok: false }
-  }
-  return { ok: true }
+  return { ok: true };
 };
 
 const login = async (body) => {
@@ -73,8 +79,9 @@ const login = async (body) => {
 };
 
 const updateUser = async (body) => {
-  body.password = await password.encrypt(body.password.toString());
-  if (!body.password) {
+  if (body.password) {
+    body.password = await password.encrypt(body.password.toString());
+  } else {
     body.password = undefined;
   }
 
