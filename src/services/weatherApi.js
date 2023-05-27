@@ -5,16 +5,25 @@ const secondsInHour = 60 * 60;
 
 const fs = require('fs');
 const path = require('path');
-const filePath = path.join(__dirname, '..', 'utils', '\cities_list.json');
+const citiesFilePath = path.join(__dirname, '..', 'utils', '\cities_list.json');
+const countriesFilePath = path.join(__dirname, '..', 'utils', '\countries_list.json');
 
-async function readCitiesFromFile() {
-  const jsonData = fs.readFileSync(filePath, 'utf-8');
-  const citiesList = JSON.parse(jsonData);
-  return citiesList;
+async function readCitiesFromFile(country) {
+  const jsonFileData = fs.readFileSync(citiesFilePath, 'utf-8');
+  const citiesList = JSON.parse(jsonFileData);
+  const filteredCities = citiesList.filter(city => city.country === country);
+  const cities = filteredCities.map(city => city.city);
+  return cities;
 }
 
-async function GetItWillRainByHour(city, hoursForecast) {
-  const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city},${'Israel'}&appid=${apiKey}`;
+async function readCountriesFromFile() {
+  const jsonFileData = fs.readFileSync(countriesFilePath, 'utf-8');
+  const countriesList = JSON.parse(jsonFileData);
+  return countriesList;
+}
+
+async function GetItWillRainByHour(city, countryCode, hoursForecast) {
+  const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city},${countryCode}&appid=${apiKey}`;
 
   try {
     const response = await fetch(url);
@@ -31,8 +40,8 @@ async function GetItWillRainByHour(city, hoursForecast) {
   }
 }
 
-async function GetCurrentTemperature(city) {
-  const url = `http://api.openweathermap.org/data/2.5/weather?q=${city},IL&appid=${apiKey}&units=metric`;
+async function GetCurrentTemperature(city, countryCode) {
+  const url = `http://api.openweathermap.org/data/2.5/weather?q=${city},${countryCode}&appid=${apiKey}&units=metric`;
   return await fetch(url)
     .then(response => response.json())
     .then(data => {
@@ -43,8 +52,8 @@ async function GetCurrentTemperature(city) {
     });
 }
 
-async function GetAirHumidity(city) {
-  const url = `http://api.openweathermap.org/data/2.5/weather?q=${city},IL&appid=${apiKey}&units=metric`;
+async function GetAirHumidity(city, countryCode) {
+  const url = `http://api.openweathermap.org/data/2.5/weather?q=${city},${countryCode}&appid=${apiKey}&units=metric`;
   return await fetch(url)
     .then(response => response.json())
     .then(data => {
@@ -55,4 +64,4 @@ async function GetAirHumidity(city) {
     });
 }
 
-export default { GetItWillRainByHour, GetCurrentTemperature, readCitiesFromFile, GetAirHumidity };
+export default { GetItWillRainByHour, GetCurrentTemperature, readCitiesFromFile, readCountriesFromFile, GetAirHumidity };

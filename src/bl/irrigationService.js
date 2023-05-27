@@ -27,7 +27,6 @@ const getIrregSec = async (body) => {
 const pushIrregSec = async (body) => {
   try {
     const objectId = new ObjectId(body.user_id)
-    console.log(body.schedule);
     const res =  await irrigationRepository.pushIrrigSchedByUserId(objectId, body.schedule);
     return res.acknowledged;
   }

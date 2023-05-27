@@ -52,7 +52,7 @@ async function setAVGLiterPerSQMByParams(_location, _ground, _grass, _light, _ev
 
 async function pushIrrigSchedByUserId(_user_id, new_irreg_sec) {
   const user = await irrigationScheduleModel.findOne({ user_id: _user_id });
-  if (user.schedule.length > 5) {
+  if (user.schedule.length > 6) {
     await irrigationScheduleModel.updateOne(
       { user_id: _user_id },
       { $pop: { schedule: -1 } }
@@ -71,7 +71,7 @@ async function createAVGIrregFiled(default_irreg_group) {
 async function createIrrigationScheduleDocument(_user_id, default_irrigation_schedule) {
   return await irrigationScheduleModel.create({
     user_id: _user_id,
-    schedule: default_irrigation_schedule,
+    //schedule: default_irrigation_schedule,
   });
 }
 

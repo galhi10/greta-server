@@ -10,9 +10,7 @@ router.post("/getTemp", async (req, res) => {
     return res.status(422).json({ status: 400, ...errors });
   }
   try {
-    console.log("🚀 ~ file: weatherRouter.js:17 ~ req.body:", req.body);
-
-    const result = await weatherApi.GetCurrentTemperature(req.params.city);
+    const result = await weatherApi.GetCurrentTemperature(req.body.city, req.body.country);
     res.json(result);
   } catch (err) {
     console.log(err);
@@ -20,26 +18,39 @@ router.post("/getTemp", async (req, res) => {
   }
 });
 
-router.get("/getAirHumidity", async (req, res) => {
+router.post("/getAirHumidity", async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ status: 400, ...errors });
   }
   try {
-    const result = await weatherApi.GetAirHumidity(req.body.city);
+    const result = await weatherApi.GetAirHumidity(req.body.city, req.body.country);
     res.json(result);
   } catch (err) {
     res.status(err.status).json({ ok: false, message: err.message });
   }
 });
 
-router.get("/getCitiesList", async (req, res) => {
+router.post("/getCitiesList", async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ status: 400, ...errors });
   }
   try {
-    const result = await weatherApi.readCitiesFromFile();
+    const result = await weatherApi.readCitiesFromFile(req.body.country);
+    res.json(result);
+  } catch (err) {
+    res.status(err.status).json({ ok: false, message: err.message });
+  }
+});
+
+router.get("/getCountriesList", async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ status: 400, ...errors });
+  }
+  try {
+    const result = await weatherApi.readCountriesFromFile();
     res.json(result);
   } catch (err) {
     res.status(err.status).json({ ok: false, message: err.message });
