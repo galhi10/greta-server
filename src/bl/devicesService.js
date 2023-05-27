@@ -16,12 +16,29 @@ const default_Humidity = 0;
 
 const createDevice = async (body) => {
   try {
-    const isExs = await deviceRepository.isDeviceExistsBySensorId(body.sensor.id);
+    const objectId = new ObjectId(body.user_id)
+    const isExs = await deviceRepository.isDeviceExistsBySensorAndUserId(body.sensor.id, objectId);
     if (isExs) {
       throw errorMessages.device.exists;
     }
-    const objectId = new ObjectId(body.user_id)
     return await deviceRepository.createDeviceDocument(objectId, body.sensor, default_Humidity);
+  }
+  catch (err) {
+    throw err;
+  }
+};
+
+const deleteDevice = async (body) => {
+  try {
+    const userId = new ObjectId(body.user_id)
+    const mongoId = new ObjectId(body.id)
+    const isExs = await deviceRepository.isDeviceExistsByMongoId(mongoId);
+    if (isExs) {
+      return await deviceRepository.deleteDeviceByMongoAndUserId(userId, mongoId);
+    }
+    else {
+      throw errorMessages.device.notExist;
+    }
   }
   catch (err) {
     throw err;
@@ -41,13 +58,13 @@ const getDevicesId = async (body) => {
 
 const setDevice = async (body) => {
   try {
-    const isExs = await deviceRepository.isDeviceExistsBySensorId(body.sensor.id);
+    const isExs = await deviceRepository.isDeviceExistsBySensorAndUserId(body.sensor.id, body.user_id);
     if (isExs) {
       throw errorMessages.device.exists;
     }
     const objectId = new ObjectId(body.user_id)
     const res = await deviceRepository.setDeviceByUserId(body.sensor.id, body.sensor);
-    return res.acknowledged;
+    return res;
   }
   catch (err) {
     throw err;
@@ -80,4 +97,4 @@ const getUserId = async (device_id) => {
   }
 };
 
-export default { getDevicesId, setDevice, createDevice, getUserId, setHumidity };
+export default { getDevicesId, setDevice, createDevice, getUserId, setHumidity, deleteDevice };

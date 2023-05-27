@@ -72,6 +72,38 @@ router.get(
   }
 );
 
+router.delete(
+  "/deleteDevice",
+  header("Authorization")
+    .custom(async (token) => {
+      const authorized = auth.authorized(token, ["ADMIN"])
+      if (authorized.status !== "SUCCESS") {
+        return Promise.reject(authorized.msg);
+      }
+      Promise.resolve();
+    }),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ status: 400, ...errors });
+    }
+    const token = auth.getToken(req);
+    const payload = auth.decodeTokenWithoutBearer(token);
+    const body = {
+      user_id: payload.userId,
+      id: req.body.id
+    };
+    try {
+      console.log(body);
+      const result = await devicesService.deleteDevice(body);
+      res.json(result);
+    } catch (err) {
+      console.log(err);
+      res.status(err.status).json({ ok: false, message: err.message });
+    }
+  }
+);
+
 router.post(
   "/setDevice",
   header("Authorization")
