@@ -43,4 +43,16 @@ async function GetCurrentTemperature(city) {
     });
 }
 
-export default { GetItWillRainByHour, GetCurrentTemperature, readCitiesFromFile };
+async function GetAirHumidity(city) {
+  const url = `http://api.openweathermap.org/data/2.5/weather?q=${city},IL&appid=${apiKey}&units=metric`;
+  return await fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      return data.main.humidity;
+    })
+    .catch(error => {
+      console.error('Error:', error.message);
+    });
+}
+
+export default { GetItWillRainByHour, GetCurrentTemperature, readCitiesFromFile, GetAirHumidity };

@@ -3,6 +3,7 @@ import express, { Request, Response, NextFunction, Router } from "express";
 import { check, validationResult, header } from "express-validator";
 
 const router = express.Router();
+
 router.get(
   "/getTemp",
   async (req, res) => {
@@ -21,6 +22,22 @@ router.get(
 );
 
 router.get(
+  "/getAirHumidity",
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ status: 400, ...errors });
+    }
+    try {
+      const result = await weatherApi.GetAirHumidity(req.body.city);
+      res.json(result);
+    } catch (err) {
+      res.status(err.status).json({ ok: false, message: err.message });
+    }
+  }
+);
+
+router.get(
   "/getCitiesList",
   async (req, res) => {
     const errors = validationResult(req);
@@ -31,7 +48,6 @@ router.get(
       const result = await weatherApi.readCitiesFromFile();
       res.json(result);
     } catch (err) {
-      console.log(err);
       res.status(err.status).json({ ok: false, message: err.message });
     }
   }
