@@ -13,6 +13,7 @@ async function getUserIdByDeviceId(_sensor_id) {
   });
   return sensor.user_id;
 }
+
 async function getDeviceDocumentByUserId(_user_id) {
   return await devicesModel.find({
     user_id: _user_id,
@@ -22,6 +23,26 @@ async function getDeviceDocumentByUserId(_user_id) {
 async function isDeviceExistsBySensorId(Device_Id) {
   return await devicesModel.findOne({
     "sensor.id": Device_Id
+  });
+}
+
+async function isDeviceExistsBySensorAndUserId(Device_Id, _user_id) {
+  return await devicesModel.findOne({
+    user_id: _user_id,
+    "sensor.id": Device_Id
+  });
+}
+
+async function isDeviceExistsByMongoId(mongo_id) {
+  return await devicesModel.findOne({
+    _id: mongo_id,
+  });
+}
+
+async function deleteDeviceByMongoAndUserId(_user_id, mongo_id) {
+  return await devicesModel.deleteOne({
+    _id: mongo_id,
+    user_id: _user_id
   });
 }
 
@@ -61,4 +82,7 @@ export default {
   getUserIdByDeviceId,
   isDeviceExistsBySensorId,
   setHumidityBySensorId,
+  isDeviceExistsBySensorAndUserId,
+  deleteDeviceByMongoAndUserId,
+  isDeviceExistsByMongoId,
 };
