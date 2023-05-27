@@ -71,16 +71,25 @@ const setDevice = async (body) => {
   }
 };
 
+const callIrrigationAlgo = async (body) => {
+  try {
+    return { time: 30 };
+  }
+  catch (err) {
+    throw err;
+  }
+};
+
 const setHumidity = async (body) => {
   try {
     const isExs = await deviceRepository.isDeviceExistsBySensorId(body.sensor_id);
     if (isExs) {
-      const res = await deviceRepository.setHumidityBySensorId(body.sensor_id, body.humidity);
+      await deviceRepository.setHumidityBySensorId(body.sensor_id, body.humidity);
+      return await callIrrigationAlgo(body.sensor_id, body.humidity);
     }
     else {
       throw errorMessages.device.notExist;
     }
-    return true;
   }
   catch (err) {
     throw err;
