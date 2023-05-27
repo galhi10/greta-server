@@ -3,7 +3,7 @@ import express, { Request, Response, NextFunction, Router } from "express";
 import { check, validationResult, header } from "express-validator";
 
 const router = express.Router();
-
+//TEST
 router.get(
   "/getTemp",
   async (req, res) => {
