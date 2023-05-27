@@ -27,7 +27,7 @@ const getIrregSec = async (body) => {
 const pushIrregSec = async (body) => {
   try {
     const objectId = new ObjectId(body.user_id)
-    const res =  await irrigationRepository.pushIrrigSchedByUserId(objectId, body.schedule);
+    const res = await irrigationRepository.pushIrrigSchedByUserId(objectId, body.schedule);
     return res.acknowledged;
   }
   catch
@@ -46,6 +46,19 @@ const getIrregGroupAVGWatering = async (_location, _ground, _grass, _light, _eva
   }
 };
 
+const updateExistsIrregSec = async (body) => {
+  try {
+    const objectId = new ObjectId(body.user_id)
+    console.log(objectId);
+    const res = await irrigationRepository.updateEndIrrigHumidity(objectId, body.end_humidity);
+    return res;
+  }
+  catch
+  {
+    throw errorMessages.user.badUserID;
+  }
+};
+
 const setIrregGroupAVGWatering = async (_location, _ground, _grass, _light, _evaporation, _water_per_sqm) => {
   try {
     const reqStatus = await irrigationRepository.setAVGLiterPerSQMByParams(_location, _ground, _grass, _light, _evaporation, _water_per_sqm);
@@ -61,4 +74,4 @@ const setIrregGroupAVGWatering = async (_location, _ground, _grass, _light, _eva
   }
 };
 
-export default { getIrregSec, pushIrregSec, getIrregGroupAVGWatering, setIrregGroupAVGWatering };
+export default { updateExistsIrregSec, getIrregSec, pushIrregSec, getIrregGroupAVGWatering, setIrregGroupAVGWatering };

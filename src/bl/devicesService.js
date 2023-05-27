@@ -1,5 +1,6 @@
 import password from "../utils/password";
 import deviceRepository from "../dal/devicesRepository";
+import irrigationRepository from "./irrigationService";
 import { errorMessages } from "../utils/errorMessages";
 import auth from "../services/auth";
 import { ObjectId } from 'mongodb'
@@ -71,7 +72,36 @@ const setDevice = async (body) => {
   }
 };
 
-const callIrrigationAlgo = async (body) => {
+const callIrrigationAlgo = async (sensor_id, humidity, state, _irrigation_time, _irrigation_volume) => {
+  if (state == "HourlyUpdate") {
+    return await deviceRepository.setHumidityBySensorId(sensor_id, humidity);
+  }
+  if (state == "StartIrrigation") {
+    const body =
+    {
+      user_id: deviceRepository.getUserIdByDeviceId(sensor_id),
+      schedule: {
+        date: Date.toLocaleDateString(),
+        time: Date.toLocaleTimeString(),
+        status: "Active",
+        start_humidity: humidity,
+        end_humidity: 0,
+        irrigation_time: _irrigation_time,
+        irrigation_volume: _irrigation_volume
+      }
+    }
+    return await irrigationRepository.pushIrregSec(body);
+  }
+  if (state == "EndIrrigation") {
+    const body =
+    {
+      user_id: deviceRepository.getUserIdByDeviceId(sensor_id),
+      schedule: {
+        end_humidity: humidity,
+      }
+    }
+    irrigationRepository.pushIrregSec(body);
+  }
   try {
     return { time: 30 };
   }

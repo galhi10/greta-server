@@ -148,7 +148,8 @@ router.post(
     }
     const body = {
       sensor_id: req.body.sensor_id,
-      humidity: req.body.humidity
+      humidity: req.body.humidity,
+      state: req.body.state
     }
     try {
       const result = await devicesService.setHumidity(body);

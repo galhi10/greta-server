@@ -50,6 +50,21 @@ async function setAVGLiterPerSQMByParams(_location, _ground, _grass, _light, _ev
   return null;
 }
 
+const updateEndIrrigHumidity = async (userId, newEndHumidity) => {
+  try {
+    const user = await irrigationScheduleModel.findOne({ user_id: userId });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const lastScheduleIndex = user.schedule.length - 1;
+    user.schedule[lastScheduleIndex].end_humidity = newEndHumidity;
+    const updatedUser = await user.save();
+    return updatedUser;
+  } catch (error) {
+    throw new Error("Failed to update last end_humidity: " + error.message);
+  }
+};
+
 async function pushIrrigSchedByUserId(_user_id, new_irreg_sec) {
   const user = await irrigationScheduleModel.findOne({ user_id: _user_id });
   if (user.schedule.length > 6) {
@@ -71,7 +86,6 @@ async function createAVGIrregFiled(default_irreg_group) {
 async function createIrrigationScheduleDocument(_user_id, default_irrigation_schedule) {
   return await irrigationScheduleModel.create({
     user_id: _user_id,
-    //schedule: default_irrigation_schedule,
   });
 }
 
@@ -83,4 +97,5 @@ export default {
   getAVGLiterPerSQMByParams,
   setAVGLiterPerSQMByParams,
   pushIrrigSchedByUserId,
+  updateEndIrrigHumidity,
 };

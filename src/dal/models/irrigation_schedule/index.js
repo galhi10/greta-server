@@ -3,11 +3,14 @@ import mongoose from "mongoose";
 const irrigationScheduleSchema = new mongoose.Schema(
   {
     user_id: { type: String },
-    schedule: [{   
+    schedule: [{
       date: { type: String },
       time: { type: String },
       status: { type: String },
-      humidity: { type: Number},
+      start_humidity: { type: Number },
+      end_humidity: { type: Number },
+      irrigation_time: { type: Number },
+      irrigation_volume: { type: Number },
     }],
   },
   {
