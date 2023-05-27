@@ -98,7 +98,7 @@ const getUser = async (userId) => {
   if (user) {
     return { ok: true, data: user };
   } else {
-    return { ok: false, message: "User not found" };
+    return { ok: false, message: errorMessages.user.badUserID };
   }
 };
 

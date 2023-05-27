@@ -23,9 +23,8 @@ const createDevice = async (body) => {
     const objectId = new ObjectId(body.user_id)
     return await deviceRepository.createDeviceDocument(objectId, body.sensor, default_Humidity);
   }
-  catch
-  {
-    throw errorMessages.device.exists;
+  catch (err) {
+    throw err;
   }
 };
 
@@ -42,27 +41,32 @@ const getDevicesId = async (body) => {
 
 const setDevice = async (body) => {
   try {
+    const isExs = await deviceRepository.isDeviceExistsBySensorId(body.sensor.id);
+    if (isExs) {
+      throw errorMessages.device.exists;
+    }
     const objectId = new ObjectId(body.user_id)
     const res = await deviceRepository.setDeviceByUserId(body.sensor.id, body.sensor);
     return res.acknowledged;
   }
-  catch
-  {
-    throw errorMessages.user.badUserID;
+  catch (err) {
+    throw err;
   }
 };
 
 const setHumidity = async (body) => {
   try {
     const isExs = await deviceRepository.isDeviceExistsBySensorId(body.sensor_id);
-    console.log(body);
-
-    const res = await deviceRepository.setHumidityBySensorId(body.sensor_id, body.humidity);
-    return res.acknowledged;
+    if (isExs) {
+      const res = await deviceRepository.setHumidityBySensorId(body.sensor_id, body.humidity);
+    }
+    else {
+      throw errorMessages.device.notExist;
+    }
+    return true;
   }
-  catch
-  {
-    throw errorMessages.device.generalFailure;
+  catch (err) {
+    throw err;
   }
 };
 

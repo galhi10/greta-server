@@ -109,14 +109,6 @@ router.post(
 
 router.post(
   "/setGroundHumidity",
-  header("Authorization")
-    .custom(async (token) => {
-      const authorized = auth.authorized(token, ["ADMIN"])
-      if (authorized.status !== "SUCCESS") {
-        return Promise.reject(authorized.msg);
-      }
-      Promise.resolve();
-    }),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
