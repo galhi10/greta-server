@@ -18,7 +18,7 @@ router.post("/getTemp", async (req, res) => {
   }
 });
 
-router.get("/getAirHumidity", async (req, res) => {
+router.post("/getAirHumidity", async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ status: 400, ...errors });
@@ -31,7 +31,7 @@ router.get("/getAirHumidity", async (req, res) => {
   }
 });
 
-router.get("/getCitiesList", async (req, res) => {
+router.post("/getCitiesList", async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ status: 400, ...errors });
