@@ -24,9 +24,9 @@ router.get(
     const body = {
       user_id: payload.userId,
     };
-    console.log(body);
     try {
       const result = await userService.getIrregSec(body);
+      console.log(result);
       res.json(result.schedule);
     } catch (err) {
       console.log(err);

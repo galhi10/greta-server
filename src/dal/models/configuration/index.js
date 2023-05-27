@@ -8,7 +8,8 @@ const configurationSchema = new mongoose.Schema(
       mode: { type: String },
       size: { type: Number },
       ground: { type: String },
-      location: { type: String },
+      country: { type: String },
+      city: { type: String },
       liters_per_minute: { type: Number },
       light: { type: String },
     }
