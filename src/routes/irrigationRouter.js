@@ -70,4 +70,34 @@ router.post(
   }
 );
 
+router.post(
+  "/startAlgo",
+  header("Authorization").custom(async (token) => {
+    const authorized = auth.authorized(token, ["ADMIN"]);
+    if (authorized.status !== "SUCCESS") {
+      return Promise.reject(authorized.msg);
+    }
+    Promise.resolve();
+  }),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ status: 400, ...errors });
+    }
+    const token = auth.getToken(req);
+    const payload = auth.decodeTokenWithoutBearer(token);
+
+    // fetch body ...
+
+    try {
+      // some logic ...
+      // const result = await userService.pushIrregSec(body);
+      // res.json(result);
+    } catch (err) {
+      console.log(err);
+      res.status(err.status).json({ ok: false, message: err.message });
+    }
+  }
+);
+
 module.exports = router;
