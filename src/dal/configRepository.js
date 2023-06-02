@@ -6,6 +6,14 @@ async function getConfigDcByUserId(user_objectId) {
   });
   return user_Config.config;
 }
+
+async function getCityByUserId(user_objectId) {
+  const user_Config = await configurationModel.findOne({
+    user_id: user_objectId,
+  });
+  return user_Config.config.city;
+}
+
 async function getConfigDocByUserId(_user_id) {
   return await configurationModel.findOne({
     user_id: _user_id,
@@ -34,4 +42,5 @@ export default {
   getConfigDcByUserId,
   getConfigDocByUserId,
   setConfigDocByUserId,
+  getCityByUserId,
 };
