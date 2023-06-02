@@ -1,6 +1,8 @@
 import password from "../utils/password";
 import deviceRepository from "../dal/devicesRepository";
 import irrigationRepository from "./irrigationService";
+import configRepository from "../dal/configRepository";
+import weatherAPI from "../services/weatherApi";
 import { errorMessages } from "../utils/errorMessages";
 import auth from "../services/auth";
 import { ObjectId } from 'mongodb'
@@ -72,50 +74,87 @@ const setDevice = async (body) => {
   }
 };
 
-const callIrrigationAlgo = async (sensor_id, humidity, state, _irrigation_time, _irrigation_volume) => {
-  if (state == "HourlyUpdate") {
-    return await deviceRepository.setHumidityBySensorId(sensor_id, humidity);
-  }
-  if (state == "StartIrrigation") {
-    const body =
-    {
-      user_id: deviceRepository.getUserIdByDeviceId(sensor_id),
-      schedule: {
-        date: Date.toLocaleDateString(),
-        time: Date.toLocaleTimeString(),
-        status: "Active",
-        start_humidity: humidity,
-        end_humidity: 0,
-        irrigation_time: _irrigation_time,
-        irrigation_volume: _irrigation_volume
-      }
-    }
-    return await irrigationRepository.pushIrregSec(body);
-  }
-  if (state == "EndIrrigation") {
-    const body =
-    {
-      user_id: deviceRepository.getUserIdByDeviceId(sensor_id),
-      schedule: {
-        end_humidity: humidity,
-      }
-    }
-    irrigationRepository.pushIrregSec(body);
-  }
+const callIrrigationAlgo = async (sensor_id, humidity, state, _irrigation_time, _irrigation_volume, user_id) => {
   try {
-    return { time: 30 };
+    if (state == "HourlyUpdate") {
+      const res = await deviceRepository.setHumidityBySensorId(sensor_id, humidity);
+      if (res) {
+        return {
+          time: 0,
+          state: "HourlyUpdate"
+        };
+      }
+    }
+    if (state == "StartIrrigation") {
+      const body =
+      {
+        user_id: user_id,
+        schedule: {
+          date: new Date().toLocaleString(),
+          time: new Date().toLocaleTimeString(),
+          status: "Active",
+          start_humidity: humidity,
+          end_humidity: 0,
+          irrigation_time: _irrigation_time,
+          irrigation_volume: _irrigation_volume
+        }
+      }
+      const res = await irrigationRepository.pushIrregSec(body);
+      if (res) {
+        return {
+          time: _irrigation_time,
+          state: "StartIrrigation"
+        };
+      }
+    }
+    if (state == "EndIrrigation") {
+      const body =
+      {
+        user_id: user_id,
+        schedule: {
+          status: "InActive",
+          end_humidity: humidity,
+        }
+      }
+      const res = irrigationRepository.updateExistsIrregSec(body);
+      if (res) {
+        return {
+          time: 0,
+          state: "EndIrrigation"
+        };
+      }
+    }
   }
   catch (err) {
     throw err;
   }
 };
 
+const setValuesForIrrigationAlgo = async (sensor_id, humidity, _state, _irrigation_time, _irrigation_volume) => {
+  try {
+    const userId = await deviceRepository.getUserIdByDeviceId(sensor_id);
+    const userConfig = await configRepository.getConfigDocByUserId(userId);
+    const willItRain = await weatherAPI.GetItWillRainByHour(userConfig.config.city, userConfig.config.country, 12);
+    let deviceNextState = "HourlyUpdate";
+    if (humidity < 25 && willItRain == false && _state == "HourlyUpdate") {
+      deviceNextState = "StartIrrigation";
+    }
+    if (_state == "StartIrrigation") {
+      deviceNextState = "EndIrrigation";
+    }
+    return await callIrrigationAlgo(sensor_id, humidity, deviceNextState, _irrigation_time, _irrigation_volume, userId);
+  }
+  catch (err) {
+    throw err;
+  }
+
+};
+
 const setHumidity = async (body) => {
   try {
     const isExs = await deviceRepository.isDeviceExistsBySensorId(body.sensor_id);
     if (isExs) {
-      await deviceRepository.setHumidityBySensorId(body.sensor_id, body.humidity);
-      return await callIrrigationAlgo(body.sensor_id, body.humidity);
+      return await setValuesForIrrigationAlgo(body.sensor_id, body.humidity, body.state, 40, 3);
     }
     else {
       throw errorMessages.device.notExist;

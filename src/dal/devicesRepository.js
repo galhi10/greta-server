@@ -7,11 +7,11 @@ async function getDeviceObjectByUserId(user_objectId) {
   return user_Sensor.Sensor;
 }
 
-async function getUserIdByDeviceId(_sensor_id) {
-  const sensor = await devicesModel.findOne({
-    sensor: { id: _sensor_id },
+async function getUserIdByDeviceId(Device_Id) {
+  const user = await devicesModel.findOne({
+    "sensor.id": Device_Id
   });
-  return sensor.user_id;
+  return user.user_id;
 }
 
 async function getDeviceDocumentByUserId(_user_id) {

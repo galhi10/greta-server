@@ -30,10 +30,12 @@ const default_irrigation_schedule = [
 const default_Humidity = 0;
 
 const createUser = async (body) => {
+  console.log(body);
   const user = await userRepository.getUserByEmail(body.email);
   if (user) {
     throw errorMessages.user.exists;
   }
+  console.log(user);
   try {
     body.password = await password.encrypt(body.password.toString());
     const userid = await userRepository.createNewUser(

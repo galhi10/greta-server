@@ -49,8 +49,7 @@ const getIrregGroupAVGWatering = async (_location, _ground, _grass, _light, _eva
 const updateExistsIrregSec = async (body) => {
   try {
     const objectId = new ObjectId(body.user_id)
-    console.log(objectId);
-    const res = await irrigationRepository.updateEndIrrigHumidity(objectId, body.end_humidity);
+    const res = await irrigationRepository.updateEndIrrigHumidity(objectId, body.schedule.end_humidity);
     return res;
   }
   catch

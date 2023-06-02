@@ -56,6 +56,7 @@ const updateEndIrrigHumidity = async (userId, newEndHumidity) => {
     if (!user) {
       throw new Error("User not found");
     }
+    console.log(newEndHumidity);
     const lastScheduleIndex = user.schedule.length - 1;
     user.schedule[lastScheduleIndex].end_humidity = newEndHumidity;
     const updatedUser = await user.save();
