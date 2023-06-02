@@ -57,7 +57,10 @@ router.post(
         date: req.body.date,
         time: req.body.time,
         status: req.body.status,
-        humidity: req.body.humidity,
+        start_humidity: req.body.start_humidity,
+        end_humidity: req.body.end_humidity,
+        irrigation_time: req.body.irrigation_time,
+        irrigation_volume: req.body.irrigation_volume,
       },
     };
     try {
@@ -71,7 +74,7 @@ router.post(
 );
 
 router.post(
-  "/startAlgo",
+  "/updateIrregSec",
   header("Authorization").custom(async (token) => {
     const authorized = auth.authorized(token, ["ADMIN"]);
     if (authorized.status !== "SUCCESS") {
@@ -86,13 +89,13 @@ router.post(
     }
     const token = auth.getToken(req);
     const payload = auth.decodeTokenWithoutBearer(token);
-
-    // fetch body ...
-
+    const body = {
+      user_id: payload.userId,
+      end_humidity: req.body.end_humidity
+    };
     try {
-      // some logic ...
-      // const result = await userService.pushIrregSec(body);
-      // res.json(result);
+      const result = await userService.updateExistsIrregSec(body);
+      res.json(result);
     } catch (err) {
       console.log(err);
       res.status(err.status).json({ ok: false, message: err.message });
