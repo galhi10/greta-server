@@ -94,7 +94,6 @@ router.delete(
       id: req.body.id
     };
     try {
-      console.log(body);
       const result = await devicesService.deleteDevice(body);
       res.json(result);
     } catch (err) {
@@ -151,6 +150,7 @@ router.post(
       humidity: req.body.humidity,
       state: req.body.state
     }
+    console.log(body);
     try {
       const result = await devicesService.setHumidity(body);
       res.json(result);

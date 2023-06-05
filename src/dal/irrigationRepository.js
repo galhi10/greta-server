@@ -50,15 +50,15 @@ async function setAVGLiterPerSQMByParams(_location, _ground, _grass, _light, _ev
   return null;
 }
 
-const updateEndIrrigHumidity = async (userId, newEndHumidity) => {
+const updateEndIrrigHumidity = async (userId, newEndHumidity, newStatus) => {
   try {
     const user = await irrigationScheduleModel.findOne({ user_id: userId });
     if (!user) {
       throw new Error("User not found");
     }
-    console.log(newEndHumidity);
     const lastScheduleIndex = user.schedule.length - 1;
     user.schedule[lastScheduleIndex].end_humidity = newEndHumidity;
+    user.schedule[lastScheduleIndex].status = newStatus;
     const updatedUser = await user.save();
     return updatedUser;
   } catch (error) {
