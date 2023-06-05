@@ -31,7 +31,6 @@ async function createNewUser(_email, _password, _first_name, _last_name) {
     first_name: _first_name,
     last_name: _last_name,
   });
-  console.log(result._id);
   return result._id;
 }
 
