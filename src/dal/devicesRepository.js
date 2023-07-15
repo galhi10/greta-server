@@ -20,6 +20,12 @@ async function getDeviceDocumentByUserId(_user_id) {
   });
 }
 
+async function getDeviceDocumentById(Device_Id) {
+  return await devicesModel.findOne({
+    "sensor.id": Device_Id
+  });
+}
+
 async function isDeviceExistsBySensorId(Device_Id) {
   return await devicesModel.findOne({
     "sensor.id": Device_Id
@@ -66,10 +72,10 @@ async function setHumidityBySensorId(sensor_id, _humidity) {
   return await devicesModel.updateOne(sensor, newvalues);
 }
 
-async function createDeviceDocument(_user_id, default_Sensor, _humidity) {
+async function createDeviceDocument(_user_id, _sensor, _humidity) {
   const res = await devicesModel.create({
     user_id: _user_id,
-    sensor: default_Sensor,
+    sensor: _sensor,
     humidity: _humidity,
   });
 }
@@ -85,4 +91,5 @@ export default {
   isDeviceExistsBySensorAndUserId,
   deleteDeviceByMongoAndUserId,
   isDeviceExistsByMongoId,
+  getDeviceDocumentById,
 };

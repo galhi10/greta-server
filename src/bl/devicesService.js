@@ -24,7 +24,7 @@ const createDevice = async (body) => {
     if (isExs) {
       throw errorMessages.device.exists;
     }
-    return await deviceRepository.createDeviceDocument(objectId, body.sensor, default_Humidity);
+    return await deviceRepository.createDeviceDocument(objectId, body.sensor, default_Humidity,);
   }
   catch (err) {
     throw err;
@@ -143,6 +143,7 @@ const callIrrigationAlgo = async (sensor_id, humidity, state, _irrigation_time, 
     } else if (state === "StartIrrigation") {
       return await startIrrigation(sensor_id, humidity, _irrigation_time, _irrigation_volume, user_id);
     } else if (state === "EndIrrigation") {
+      await updateHumidity(sensor_id, humidity);
       return await endIrrigation(humidity, user_id);
     }
   } catch (err) {
@@ -154,14 +155,13 @@ const callIrrigationAlgo = async (sensor_id, humidity, state, _irrigation_time, 
 const setValuesForIrrigationAlgo = async (sensor_id, humidity, _state, _irrigation_time, _irrigation_volume) => {
   try {
     console.log("_state: ", _state);
-    const userId = await deviceRepository.getUserIdByDeviceId(sensor_id);
-    const userConfig = await configRepository.getConfigDocByUserId(userId);
-    const willItRain = await weatherAPI.GetItWillRainByHour(userConfig.config.city, userConfig.config.country, 12);
+    const device = await deviceRepository.getDeviceDocumentById(sensor_id);
+    const willItRain = await weatherAPI.GetItWillRainByHour(device.sensor.location_city, device.sensor.location_country, 12);
     let deviceNextState = "HourlyUpdate";
     if (humidity < 30 && willItRain == false && _state == "HourlyUpdate") {
       deviceNextState = "StartIrrigation";
     }
-    else if (_state == "StartIrrigation") {
+    else if (_state == "StartIrrigation" && device.sensor.mode == "Automatic") {
       deviceNextState = "EndIrrigation";
     }
     else if (_state == "EndIrrigation") {
