@@ -81,10 +81,16 @@ async function GetWeatherAlert(city, countryCode) {
         if (weatherTempMin < 30) {
           weatherCondition = "Freeze Wave"
         }
-        return `Extreme weather condition ${weatherCondition} is expected at ${data.list[i].dt_txt} with a temperature of ${data.list[i].main.temp}°C.`;
+        return {
+          extreme: true,
+          msg: `Extreme weather condition ${weatherCondition} is expected at ${data.list[i].dt_txt} with a temperature of ${data.list[i].main.temp}°C.`
+        };
       }
     }
-    return 'No extreme weather conditions for farmers in the next 24 hours.';
+    return {
+      extreme: false,
+      msg: 'No extreme weather conditions for farmers in the next 24 hours.'
+    };
   } catch (error) {
     console.error('Error:', error.message);
     throw error;
