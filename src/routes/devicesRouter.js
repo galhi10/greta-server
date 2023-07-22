@@ -28,8 +28,10 @@ router.put(
       user_id: payload.userId,
       sensor: {
         id: req.body.sensor.id,
-        location: req.body.sensor.location,
-        model: req.body.sensor.model,
+        location_country: req.body.sensor.location_country,
+        location_city: req.body.sensor.location_city,
+        name: req.body.sensor.name,
+        mode: req.body.sensor.mode,
       },
     };
     try {
