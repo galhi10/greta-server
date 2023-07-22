@@ -1,3 +1,4 @@
+import { STATUS_CODES } from "http";
 import { config } from "../config";
 
 const apiKey = config.weather.api_key;
@@ -68,8 +69,13 @@ async function GetWeatherAlert(city, countryCode) {
   const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city},${countryCode}&appid=${apiKey}&units=metric`;
   try {
     const response = await fetch(url);
+    console.log(response.status);
+    if (response.status != 200)
+      return {
+        extreme: false,
+        msg: response.status
+      };
     const data = await response.json();
-    console.log(data.list[7]);
     for (let i = 0; i < 8; i++) {
       let weatherCondition = data.list[i].weather[0].description;
       let weatherTempMax = data.list[i].main.temp_max;

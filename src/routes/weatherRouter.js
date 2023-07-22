@@ -32,7 +32,7 @@ router.post("/getAirHumidity", async (req, res) => {
   }
 });
 
-router.get("/getWeatherAlert", async (req, res) => {
+router.post("/getWeatherAlert", async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ status: 400, ...errors });
