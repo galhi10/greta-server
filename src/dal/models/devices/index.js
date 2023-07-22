@@ -3,12 +3,15 @@ import mongoose from "mongoose";
 const devicesSchema = new mongoose.Schema(
     {
         user_id: { type: String },
-        sensor: {
+        config: {
             id: { type: Number },
-            location_country: { type: String },
-            location_city: { type: String },
-            name: { type: String },
             mode: { type: String },
+            name: { type: String },
+            grass: { type: String },
+            size: { type: Number },
+            ground: { type: String },
+            liters_per_minute: { type: Number },
+            light: { type: String },
         },
         humidity: { type: Number }
     },

@@ -5,14 +5,8 @@ import auth from "../services/auth";
 import { ObjectId } from 'mongodb'
 
 const default_config = {
-  grass: "",
-  mode: "",
-  ground: "",
   country: "",
   city: "",
-  size: 0,
-  liters_per_minute: 0,
-  light: "",
 };
 
 const createConfig = async (body) => {

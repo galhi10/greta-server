@@ -1,5 +1,5 @@
 import devicesService from "../bl/devicesService";
-import configService from "../bl/configService";
+import SensorStatesMachineService from "../bl/SensorStatesMachineService";
 import auth from "../services/auth";
 import express, { Request, Response, NextFunction, Router } from "express";
 import { check, validationResult, header } from "express-validator";
@@ -26,12 +26,15 @@ router.put(
     const payload = auth.decodeTokenWithoutBearer(token);
     const body = {
       user_id: payload.userId,
-      sensor: {
-        id: req.body.sensor.id,
-        location_country: req.body.sensor.location_country,
-        location_city: req.body.sensor.location_city,
-        name: req.body.sensor.name,
-        mode: req.body.sensor.mode,
+      config: {
+        id: req.body.config.id,
+        mode: req.body.config.mode,
+        name: req.body.config.name,
+        grass: req.body.config.grass,
+        size: req.body.config.size,
+        ground: req.body.config.ground,
+        liters_per_minute: req.body.config.liters_per_minute,
+        light: req.body.config.light,
       },
     };
     try {
@@ -124,10 +127,15 @@ router.post(
     const payload = auth.decodeTokenWithoutBearer(token);
     const body = {
       user_id: payload.userId,
-      sensor: {
-        id: req.body.sensor.id,
-        location: req.body.sensor.location,
-        model: req.body.sensor.model,
+      config: {
+        id: req.body.config.id,
+        mode: req.body.config.mode,
+        name: req.body.config.name,
+        grass: req.body.config.grass,
+        size: req.body.config.size,
+        ground: req.body.config.ground,
+        liters_per_minute: req.body.config.liters_per_minute,
+        light: req.body.config.light,
       }
     };
     try {
@@ -148,13 +156,13 @@ router.post(
       return res.status(422).json({ status: 400, ...errors });
     }
     const body = {
-      sensor_id: req.body.sensor_id,
+      sensor_id: req.body.config_id,
       humidity: req.body.humidity,
       state: req.body.state
     }
     console.log(body);
     try {
-      const result = await devicesService.setHumidity(body);
+      const result = await SensorStatesMachineService.setHumidity(body);
       res.json(result);
     } catch (err) {
       console.log(err);
