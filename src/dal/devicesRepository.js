@@ -62,6 +62,16 @@ async function setDeviceByUserId(config_id, _config) {
   return await devicesModel.updateOne(sensor, newvalues);
 }
 
+async function setDeviceByConfigId(config_id, _config) {
+  const newvalues = {
+    $set: {
+      config: _config,
+    },
+  };
+  const sensor = { "_id": config_id };
+  return await devicesModel.updateOne(sensor, newvalues);
+}
+
 async function setHumidityBySensorId(sensor_id, _humidity) {
   const newvalues = {
     $set: {
@@ -92,4 +102,5 @@ export default {
   deleteDeviceByMongoAndUserId,
   isDeviceExistsByMongoId,
   getDeviceDocumentById,
+  setDeviceByConfigId,
 };

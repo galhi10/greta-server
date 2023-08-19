@@ -6,6 +6,8 @@ const configurationSchema = new mongoose.Schema(
     config: {
       country: { type: String },
       city: { type: String },
+      lat: { type: Number },
+      long: { type: Number },
     }
   },
   {
