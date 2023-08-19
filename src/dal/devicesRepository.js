@@ -63,11 +63,17 @@ async function setDeviceByUserId(config_id, _config) {
 }
 
 async function setDeviceByConfigId(config_id, _config) {
+  console.log(_config);
+  const updateFields = {};
+  for (const key in _config) {
+    if (_config.hasOwnProperty(key)) {
+      updateFields[`config.${key}`] = _config[key];
+    }
+  }
   const newvalues = {
-    $set: {
-      config: _config,
-    },
+    $set: updateFields,
   };
+  
   const sensor = { "_id": config_id };
   return await devicesModel.updateOne(sensor, newvalues);
 }

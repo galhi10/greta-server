@@ -55,10 +55,10 @@ const getDevicesId = async (body) => {
 const setDevice = async (body) => {
   try {
     const isExs = await deviceRepository.isDeviceExistsBySensorAndUserId(body.config.id, body.user_id);
-    if (isExs) {
+    if (!isExs) {
       throw errorMessages.device.exists;
     }
-    const objectId = new ObjectId(body.user_id)
+    const objectId = new ObjectId(body.user_id);
     const res = await deviceRepository.setDeviceByConfigId(body._id, body.config);
     return res;
   }
@@ -66,7 +66,6 @@ const setDevice = async (body) => {
     throw err;
   }
 };
-
 
 
 const getUserId = async (device_id) => {

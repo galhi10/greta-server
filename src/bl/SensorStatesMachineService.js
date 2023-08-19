@@ -90,8 +90,9 @@ const callIrrigationAlgo = async (sensor_name, sensor_id, humidity, state, _irri
 
 const setValuesForIrrigationAlgo = async (userConfig, device, humidity, state) => {
   try {
-    const willItRain = await weatherAPI.GetItWillRainByHour(userConfig.config.city, userConfig.config.country, RainForecastHours);
+    const willItRain = await weatherAPI.GetItWillRainByHour(userConfig.city, userConfig.country, RainForecastHours);
     let deviceNextState = "HourlyUpdate";
+    console.log(device.config.mode);
     if (device.config.mode == "Automatic") {
       if (humidity < MinHumidity && willItRain == false && state == "HourlyUpdate") {
         deviceNextState = "StartIrrigation";
@@ -111,10 +112,13 @@ const setValuesForIrrigationAlgo = async (userConfig, device, humidity, state) =
 };
 
 const setHumidity = async (body) => {
+  if (!body.sensor_id) {
+    throw errorMessages.device.notExist;
+  }
   try {
-    const isExs = await deviceRepository.isDeviceExistsBySensorId(body.config_id);
-    const userConfig = await configRepository.getConfigDcByUserId(body.user_id);
-    const device = await deviceRepository.getDeviceDocumentById(sensor_id);
+    const isExs = await deviceRepository.isDeviceExistsBySensorId(body.sensor_id);
+    const userConfig = await configRepository.getConfigDcByUserId(isExs.user_id);
+    const device = await deviceRepository.getDeviceDocumentById(body.sensor_id);
     if (isExs && userConfig && device) {
       return await setValuesForIrrigationAlgo(userConfig, device, body.humidity, body.state);
     }

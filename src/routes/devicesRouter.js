@@ -157,11 +157,10 @@ router.post(
       return res.status(422).json({ status: 400, ...errors });
     }
     const body = {
-      sensor_id: req.body.config_id,
+      sensor_id: req.body.sensor_id,
       humidity: req.body.humidity,
       state: req.body.state
     }
-    console.log(body);
     try {
       const result = await SensorStatesMachineService.setHumidity(body);
       res.json(result);
