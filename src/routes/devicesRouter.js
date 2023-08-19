@@ -126,6 +126,7 @@ router.post(
     const token = auth.getToken(req);
     const payload = auth.decodeTokenWithoutBearer(token);
     const body = {
+      _id: req.body._id,
       user_id: payload.userId,
       config: {
         id: req.body.config.id,

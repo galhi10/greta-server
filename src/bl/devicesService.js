@@ -59,7 +59,7 @@ const setDevice = async (body) => {
       throw errorMessages.device.exists;
     }
     const objectId = new ObjectId(body.user_id)
-    const res = await deviceRepository.setDeviceByUserId(body.config.id, body.config);
+    const res = await deviceRepository.setDeviceByConfigId(body._id, body.config);
     return res;
   }
   catch (err) {
