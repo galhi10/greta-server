@@ -6,86 +6,66 @@ const CRITIC_HUMIDITY_PERCENTAGE = 10;
 const SIX_AM = 10;
 const EIGHT_PM = 10;
 
-const TWENTY_MINUTES = 1000 * 60 * 20;
-// let REMINDER_POPED_UP = false;
-// let ABORTED_DUE_TO_PERCIPITAION = 0;
-
-function hourlyCheckForHumidityAndWeather() {
-  const humidityPercentage = checkForHumiditySensor();
-  if (humidityPercentage < CRITIC_HUMIDITY_PERCENTAGE) {
-    const hourNow = new Date().getHours();
-    const isPercipitation = checkForPercipitaion(DBMyLocation()); // 50% for percipitation in next 12 hours
-    if (!isPercipitation /*|| ABORTED_DUE_TO_PERCIPITAION > 2*/) {
-      if (!(hourNow > SIX_AM && hourNow < EIGHT_PM)) {
-        // not between 06:00 to 20:00
-        initIrrigationProcess();
-      } else {
-        return;
-      }
-    } else {
-      return;
-    }
+function irrigationProcess(currentHumidity) {
+  if (doNeedToIrrigate()) {
+    return getTimeToIrrigate();
   }
+  return 0;
 }
 
-function initIrrigationProcess() {
-  // considering hour is good, humidity low, no predicted percipitation
-  const loanSize = DBcheckForLoanSize();
-  const litersPerMinute = DBcheckForLitersPerMinute();
-  const humidityPercentageBefore = checkForHumiditySensor();
-  let irrigatingDuration = 0;
-  const neededLitersPerMeter = DBgetEstimatedLitersPerMeter(
-    location,
-    light,
-    grass,
-    soil,
-    evaporationRate
-  );
-  irrigatingDuration = convertLitersToDuration(
-    neededLitersPerMeter * loanSize,
-    litersPerMinute
-  );
-  activateSprinklers(irrigatingDuration);
-
-  var firstInterval = setInterval(function () {
-    checkSensorAfterIrrigation(
-      firstInterval,
-      humidityPercentageBefore,
-      neededLitersPerMeter
-    );
-  }, TWENTY_MINUTES + irrigatingDuration); // verify it works plus irrigation time
-
-  // REMINDER_POPED_UP;
-}
-
-function checkSensorAfterIrrigation(
-  firstInterval,
-  humidityPercentageBefore,
-  neededLitersPerMeter
-) {
-  clearInterval(firstInterval);
-  const humidityPercentageAfter = checkForHumiditySensor();
+function doNeedToIrrigate() {
   if (
-    humidityPercentageAfter >= MIN_HUMIDITY_PERCENTAGE &&
-    humidityPercentageAfter <= MAX_HUMIDITY_PERCENTAGE
+    doesdHumidityLow(currentHumidity) &&
+    !currentlyInHeatHours() &&
+    !precipitationForcasted()
   ) {
-    // to document to database the liters per minute - it was good
+    return true;
+  }
+  return false;
+}
+
+function doesdHumidityLow(currentHumidity) {
+  return currentHumidity < CRITIC_HUMIDITY_PERCENTAGE;
+}
+
+function getTimeToIrrigate() {
+  let sizeOfLoan = getSizeOfLoan();
+  let totalLitersToIrrigate = sizeOfLoan * getLitersPerMeter();
+
+  return (totalLitersToIrrigate / getLitersPerMinute()) * 60; // time in seconds
+}
+
+function currentlyInHeatHours() {
+  const hour = new Date().getHours();
+  return hour >= 8 && hour <= 20;
+}
+
+function afterIrrigationHandler(
+  humidityAfterTwentyMinutes,
+  humidityBeforeIrrigation
+) {
+  if (
+    humidityAfterTwentyMinutes >= MIN_HUMIDITY_PERCENTAGE &&
+    humidityAfterTwentyMinutes <= MAX_HUMIDITY_PERCENTAGE
+  ) {
+    // to document to database the amount That was Irrigated - it was good (in liters per minute)
+    //
     return;
   } else {
     const exception =
-      (humidityPercentageAfter - humidityPercentageBefore) /
-      (AVG_HUMIDITY_PERCENTAGE - humidityPercentageBefore);
-    // document to DB: (1 / exeption )*neededLitersPerMeter;
+      (humidityAfterTwentyMinutes - humidityBeforeIrrigation) /
+      (AVG_HUMIDITY_PERCENTAGE - humidityBeforeIrrigation);
+    // document to DB: (1 / exeption )*amountThatIrrigated;
     return;
   }
 }
 
-function convertLitersToDuration(amountOfLiters, litersPerMinute) {
-  // check if object is fine
-  return Math.floor(amountOfLiters / litersPerMinute);
-}
+// function convertLitersToDuration(amountOfLiters, litersPerMinute) {
+//   // check if object is fine
+//   return Math.floor(amountOfLiters / litersPerMinute);
+// }
 
-function convertDurationToLiters(amountOfMinutes) {
-  // check if object is fine
-  return amountOfMinutes * LITERS_PER_MINUTE;
-}
+// function convertDurationToLiters(amountOfMinutes) {
+//   // check if object is fine
+//   return amountOfMinutes * LITERS_PER_MINUTE;
+// }
