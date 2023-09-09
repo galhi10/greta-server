@@ -10,6 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const citiesFilePath = path.join(__dirname, '..', 'utils', '\cities_list.json');
 const countriesFilePath = path.join(__dirname, '..', 'utils', '\countries_list.json');
+const grassValuesPath = path.join(__dirname, '..', 'utils', '\GrassType.json');
 
 async function readCitiesFromFile(country) {
   const jsonFileData = fs.readFileSync(citiesFilePath, 'utf-8');
@@ -20,6 +21,12 @@ async function readCitiesFromFile(country) {
 }
 
 async function readCountriesFromFile() {
+  const jsonFileData = fs.readFileSync(countriesFilePath, 'utf-8');
+  const countriesList = JSON.parse(jsonFileData);
+  return countriesList;
+}
+
+async function readGrassValuesFromFile() {
   const jsonFileData = fs.readFileSync(countriesFilePath, 'utf-8');
   const countriesList = JSON.parse(jsonFileData);
   return countriesList;
@@ -64,20 +71,18 @@ async function GetCurrentTemperature(city, countryCode) {
 
 
 async function GetAirHumidity(city, countryCode) {
-  if(city && countryCode)
-  {
-  //await calculateEvaporationForLocation(city, countryCode);
-  const url = `http://api.openweathermap.org/data/2.5/weather?q=${city},${countryCode}&appid=${apiKey}&units=metric`;
-  return await fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      return data.main.humidity;
-    })
-    .catch(error => {
-      console.error('Error:', error.message);
-    });
+  if (city && countryCode) {
+    const url = `http://api.openweathermap.org/data/2.5/weather?q=${city},${countryCode}&appid=${apiKey}&units=metric`;
+    return await fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        return data.main.humidity;
+      })
+      .catch(error => {
+        console.error('Error:', error.message);
+      });
   }
-  else{
+  else {
     console.error('Error: city , countryCode Undefined');
   }
 }
@@ -132,8 +137,9 @@ async function convertCityCountryToLatLong(city, countryCode) {
   }
 }
 
-async function getWeatherData(lat, lon, weatherDate) {
-  const apiUrl = `https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=${lat}&lon=${lon}&dt=${weatherDate}&appid=${apiKey}&units=metric`;
+async function getWeatherData(city, country, weatherDate) {
+  const latLonLocation = await convertCityCountryToLatLong(city, country);
+  const apiUrl = `https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=${latLonLocation.lat}&lon=${latLonLocation.lon}&dt=${weatherDate}&appid=${apiKey}&units=metric`;
   try {
     const response = await fetch(apiUrl);
     const data = await response.json();
@@ -167,7 +173,9 @@ async function calculateEvaporationForLocation(city, country) {
       evpParams.clouds /= hoursOfHistoryWeatherData;
       evpParams.wind /= hoursOfHistoryWeatherData;
 
-      return evpParams;
+      const temp = calculateEvaporationByData(evpParams.wind, evpParams.temp, evpParams.clouds, evpParams.humidity);
+      console.log(temp);
+      return 10;
 
     } catch (error) {
       console.error('Error calculating evaporation:', error);
@@ -187,4 +195,4 @@ async function calculateEvaporationByData(windSpeed, temperature, cloudiness, hu
   return evaporation;
 }
 
-export default { convertCityCountryToLatLong, calculateEvaporationForLocation, GetWeatherAlert, GetItWillRainByHour, GetCurrentTemperature, readCitiesFromFile, readCountriesFromFile, GetAirHumidity };
+export default { readGrassValuesFromFile, convertCityCountryToLatLong, calculateEvaporationForLocation, GetWeatherAlert, GetItWillRainByHour, GetCurrentTemperature, readCitiesFromFile, readCountriesFromFile, GetAirHumidity };

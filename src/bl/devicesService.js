@@ -17,6 +17,9 @@ const createDevice = async (body) => {
     if (isExs) {
       throw errorMessages.device.exists;
     }
+    const grassValues = weatherAPI.readGrassValuesFromFile;
+    body.config.min_humidity = grassValues[body.config.grass].min_humidity;
+    body.config.max_humidity = grassValues[body.config.grass].max_humidity;
     return await deviceRepository.createDeviceDocument(objectId, default_Humidity, body.config);
   }
   catch (err) {
@@ -54,7 +57,7 @@ const getDevicesId = async (body) => {
 
 const setDevice = async (body) => {
   try {
-    const isExs = await deviceRepository.isDeviceExistsBySensorAndUserId(body.config.id, body.user_id);
+    const isExs = await deviceRepository.isDeviceExistsBySensorAndUserIdObjects(body._id, body.user_id);
     if (!isExs) {
       throw errorMessages.device.exists;
     }
