@@ -32,6 +32,8 @@ router.put(
         name: req.body.config.name,
         grass: req.body.config.grass,
         size: req.body.config.size,
+        min_humidity: 0,
+        max_humidity: 0,
         ground: req.body.config.ground,
         liters_per_minute: req.body.config.liters_per_minute,
         light: req.body.config.light,
@@ -134,6 +136,8 @@ router.post(
         name: req.body.config.name,
         grass: req.body.config.grass,
         size: req.body.config.size,
+        min_humidity: req.body.config.min_humidity,
+        max_humidity: req.body.config.max_humidity,
         ground: req.body.config.ground,
         liters_per_minute: req.body.config.liters_per_minute,
         light: req.body.config.light,
@@ -157,11 +161,10 @@ router.post(
       return res.status(422).json({ status: 400, ...errors });
     }
     const body = {
-      sensor_id: req.body.config_id,
+      sensor_id: req.body.sensor_id,
       humidity: req.body.humidity,
       state: req.body.state
     }
-    console.log(body);
     try {
       const result = await SensorStatesMachineService.setHumidity(body);
       res.json(result);

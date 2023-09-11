@@ -9,6 +9,8 @@ const devicesSchema = new mongoose.Schema(
             name: { type: String },
             grass: { type: String },
             size: { type: Number },
+            min_humidity: { type: Number },
+            max_humidity: { type: Number },
             ground: { type: String },
             liters_per_minute: { type: Number },
             light: { type: String },

@@ -1,0 +1,27 @@
+[
+  {
+    "Grass": "Ryegrass",
+    "min_humidity": 20,
+    "max_humidity": 72
+  },
+  {
+    "Grass": "Floratam",
+    "min_humidity": 19,
+    "max_humidity": 70
+  },
+  {
+    "Grass": "Fine Fescue",
+    "min_humidity": 18,
+    "max_humidity": 67
+  },
+  {
+    "Grass": "Bluegrass",
+    "min_humidity": 17,
+    "max_humidity": 63
+  },
+  {
+    "Grass": "Bentgrass",
+    "min_humidity": 16,
+    "max_humidity": 58
+  }
+]

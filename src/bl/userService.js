@@ -14,6 +14,8 @@ const default_config = {
   country: "",
   city: "",
   size: 0,
+  min_humidity: 0,
+  max_humidity: 0,
   liters_per_minute: 0,
   light: "",
 };

@@ -17,6 +17,17 @@ const createDevice = async (body) => {
     if (isExs) {
       throw errorMessages.device.exists;
     }
+    //
+    const grassValuesJson = await weatherAPI.readGrassValuesFromFile();
+    const grass = grassValuesJson.find(item => item.Grass === body.config.grass);
+    if (grass) {
+      body.config.min_humidity = grass.min_humidity;
+      body.config.max_humidity = grass.max_humidity;
+    }
+    else {
+      throw errorMessages.device.generalFailure;
+    }
+    //
     return await deviceRepository.createDeviceDocument(objectId, default_Humidity, body.config);
   }
   catch (err) {
@@ -54,11 +65,11 @@ const getDevicesId = async (body) => {
 
 const setDevice = async (body) => {
   try {
-    const isExs = await deviceRepository.isDeviceExistsBySensorAndUserId(body.config.id, body.user_id);
-    if (isExs) {
+    const isExs = await deviceRepository.isDeviceExistsBySensorAndUserIdObjects(body._id, body.user_id);
+    if (!isExs) {
       throw errorMessages.device.exists;
     }
-    const objectId = new ObjectId(body.user_id)
+    const objectId = new ObjectId(body.user_id);
     const res = await deviceRepository.setDeviceByConfigId(body._id, body.config);
     return res;
   }
@@ -66,7 +77,6 @@ const setDevice = async (body) => {
     throw err;
   }
 };
-
 
 
 const getUserId = async (device_id) => {
