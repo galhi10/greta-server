@@ -27,9 +27,9 @@ async function readCountriesFromFile() {
 }
 
 async function readGrassValuesFromFile() {
-  const jsonFileData = fs.readFileSync(countriesFilePath, 'utf-8');
-  const countriesList = JSON.parse(jsonFileData);
-  return countriesList;
+  const jsonFileData = fs.readFileSync(grassValuesPath, 'utf-8');
+  const grassValuesList = JSON.parse(jsonFileData);
+  return grassValuesList;
 }
 
 async function GetItWillRainByHour(city, countryCode, hoursForecast) {

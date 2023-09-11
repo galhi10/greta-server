@@ -17,9 +17,17 @@ const createDevice = async (body) => {
     if (isExs) {
       throw errorMessages.device.exists;
     }
-    const grassValues = weatherAPI.readGrassValuesFromFile;
-    body.config.min_humidity = grassValues[body.config.grass].min_humidity;
-    body.config.max_humidity = grassValues[body.config.grass].max_humidity;
+    //
+    const grassValuesJson = await weatherAPI.readGrassValuesFromFile();
+    const grass = grassValuesJson.find(item => item.Grass === body.config.grass);
+    if (grass) {
+      body.config.min_humidity = grass.min_humidity;
+      body.config.max_humidity = grass.max_humidity;
+    }
+    else {
+      throw errorMessages.device.generalFailure;
+    }
+    //
     return await deviceRepository.createDeviceDocument(objectId, default_Humidity, body.config);
   }
   catch (err) {

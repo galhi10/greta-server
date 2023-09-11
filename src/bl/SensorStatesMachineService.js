@@ -24,7 +24,7 @@ const updateHumidity = async (sensor_id, humidity) => {
   }
 };
 
-const startIrrigation = async (_sensor_name, humidity, _irrigation_time, _irrigation_volume, user_id) => {
+const startIrrigation = async (_sensor_name, humidity, _irrigation_time, _irrigation_volume, user_id, _max_humidity) => {
   try {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     const body = {
@@ -44,6 +44,7 @@ const startIrrigation = async (_sensor_name, humidity, _irrigation_time, _irriga
     if (res) {
       return {
         time: _irrigation_time,
+        max_humidity: _max_humidity,
         state: "StartIrrigation"
       };
     }
@@ -73,16 +74,16 @@ const endIrrigation = async (humidity, user_id) => {
   }
 };
 
-const callIrrigationAlgo = async (sensor_name, sensor_id, humidity, state, Pump_Volume, user_id, size, userConfig) => {
+const callIrrigationAlgo = async (sensor_name, sensor_id, humidity, state, Pump_Volume, user_id, size, userConfig, max_humidity) => {
   try {
     const res = await updateHumidity(sensor_id, humidity);
     if (state === "StartIrrigation") {
       const evaporationParam = await weatherAPI.calculateEvaporationForLocation(userConfig.city, userConfig.country);
       const irrigation_Volume_Per_OneSQM = ((100 - humidity) / 20) * evaporationParam / 10;
       const total_Irrigation_Volume = irrigation_Volume_Per_OneSQM * size;
-      const irrigation_time = (total_Irrigation_Volume / Pump_Volume) * 60;
+      const irrigation_time = Math.floor(((total_Irrigation_Volume / Pump_Volume) * 3));
 
-      return await startIrrigation(sensor_name, humidity, irrigation_time, total_Irrigation_Volume, user_id);
+      return await startIrrigation(sensor_name, humidity, irrigation_time, total_Irrigation_Volume, user_id, max_humidity);
     } else if (state === "EndIrrigation") {
       return await endIrrigation(humidity, user_id);
     }
@@ -96,7 +97,6 @@ const setValuesForIrrigationAlgo = async (userConfig, device, humidity, state) =
   try {
     const willItRain = await weatherAPI.GetItWillRainByHour(userConfig.city, userConfig.country, RainForecastHours);
     let deviceNextState = "HourlyUpdate";
-    console.log(device.config.mode);
     if (device.config.mode == "Automatic") {
       if (humidity < device.config.min_humidity && willItRain == false && state == "HourlyUpdate") {
         deviceNextState = "StartIrrigation";
@@ -108,7 +108,7 @@ const setValuesForIrrigationAlgo = async (userConfig, device, humidity, state) =
         deviceNextState = "HourlyUpdate";
       }
     }
-    return await callIrrigationAlgo(device.config.name, device.config.id, humidity, deviceNextState, device.config.liters_per_minute, device.user_id, device.config.size, userConfig);
+    return await callIrrigationAlgo(device.config.name, device.config.id, humidity, deviceNextState, device.config.liters_per_minute, device.user_id, device.config.size, userConfig, device.config.max_humidity);
   }
   catch (err) {
     throw err;
